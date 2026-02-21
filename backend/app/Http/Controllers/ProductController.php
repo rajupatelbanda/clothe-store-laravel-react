@@ -13,7 +13,7 @@ class ProductController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Product::with(['category', 'brand', 'subcategory']);
+        $query = Product::with(['category', 'brand', 'subcategory', 'variations']);
 
         if (!$request->has('admin')) {
             $query->where('status', true);
@@ -196,6 +196,11 @@ class ProductController extends Controller
                     $data['discount_percentage'] = null;
                 }
             }
+
+            // Explicitly handle booleans
+            if ($request->has('is_featured')) $data['is_featured'] = $request->is_featured === 'true' || $request->is_featured === true || $request->is_featured == 1;
+            if ($request->has('is_trending')) $data['is_trending'] = $request->is_trending === 'true' || $request->is_trending === true || $request->is_trending == 1;
+            if ($request->has('status')) $data['status'] = $request->status === 'true' || $request->status === true || $request->status == 1;
 
             $product->update($data);
 

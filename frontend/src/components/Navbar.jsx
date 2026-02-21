@@ -39,17 +39,80 @@ const Navbar = () => {
             <div className="container">
                 <Link className="navbar-brand fw-black fs-2 d-flex align-items-center animate-left" to="/">
                     {settings?.logo ? (
-                        <img src={`${import.meta.env.VITE_STORAGE_URL}/${settings.logo}`} alt="logo" height="60" className="me-3 rounded shadow-sm border border-white" />
+                        <img src={`${import.meta.env.VITE_STORAGE_URL}/${settings.logo}`} alt="logo" height="60" className="me-2 me-sm-3 rounded shadow-sm border border-white logo-img" />
                     ) : (
-                        <div className="bg-white text-primary p-2 rounded-4 me-3 shadow-sm border border-white d-flex align-items-center justify-content-center" style={{ width: '50px', height: '50px' }}>
+                        <div className="bg-white text-primary p-2 rounded-4 me-2 me-sm-3 shadow-sm border border-white d-flex align-items-center justify-content-center logo-placeholder" style={{ width: '50px', height: '50px' }}>
                             <i className="bi bi-bag-heart-fill fs-3"></i>
                         </div>
                     )}
-                    <span className="text-white letter-spacing-tight small-caps">{settings?.site_name || 'Gemini Store'}</span>
+                    <span className="text-white letter-spacing-tight small-caps d-none d-sm-inline">{settings?.site_name || 'Gemini Store'}</span>
                 </Link>
-                <button className="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+
+                <div className="d-flex align-items-center gap-2 ms-auto order-lg-last px-2">
+                    <Link className="nav-icon-btn position-relative d-flex align-items-center justify-content-center bg-light rounded-circle shadow-sm" to="/wishlist" title="Wishlist">
+                        <i className="bi bi-heart-fill text-dark"></i>
+                        {wishlist.length > 0 && <span className="icon-badge badge rounded-pill bg-primary text-white border border-2 border-white shadow-sm">{wishlist.length}</span>}
+                    </Link>
+                    
+                    <div className="cart-dropdown-wrapper">
+                        <Link className="nav-icon-btn position-relative d-flex align-items-center justify-content-center bg-light rounded-circle shadow-sm" to="/cart" title="Bag">
+                            <i className="bi bi-bag-check-fill text-dark"></i>
+                            {cart.length > 0 && <span className="icon-badge badge rounded-pill bg-dark text-white border border-2 border-white shadow-sm">{cart.length}</span>}
+                        </Link>
+
+                        {/* Mini Cart Dropdown (Hidden on mobile for better UX) */}
+                        <div className="cart-dropdown shadow-xl border-0 rounded-4 p-3 bg-white d-none d-lg-block">
+                            <div className="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                                <h6 className="fw-black mb-0 small text-uppercase">Your Bag ({cart.length})</h6>
+                                <Link to="/cart" className="small fw-bold text-primary text-decoration-none">View All</Link>
+                            </div>
+                            <div className="cart-items-scroll overflow-auto" style={{maxHeight: '350px'}}>
+                                {cart.length === 0 ? (
+                                    <div className="text-center py-4 text-muted small fw-bold">Bag is empty</div>
+                                ) : (
+                                    cart.map((item, idx) => (
+                                        <div key={`${item.id}-${idx}`} className="d-flex gap-3 mb-3 align-items-center border-bottom border-light pb-3 position-relative group">
+                                            <img src={item.images?.[0]?.startsWith('http') ? item.images[0] : `${import.meta.env.VITE_STORAGE_URL}/${item.images?.[0]}`} alt={item.name} className="rounded-3 shadow-sm border" style={{width: '50px', height: '50px', objectFit: 'cover'}} />
+                                            <div className="flex-grow-1 overflow-hidden pe-3">
+                                                <h6 className="fw-bold mb-0 text-truncate small">{item.name}</h6>
+                                                <div className="d-flex gap-2 small opacity-75 fw-bold" style={{fontSize: '0.7rem'}}>
+                                                    <span>{item.size}</span>
+                                                    <span>•</span>
+                                                    <span>{item.color}</span>
+                                                </div>
+                                                <div className="d-flex justify-content-between align-items-center mt-1">
+                                                    <span className="fw-black text-primary small">₹{item.price}</span>
+                                                    <span className="badge bg-light text-dark border small fw-bold" style={{fontSize: '0.65rem'}}>x{item.quantity}</span>
+                                                </div>
+                                            </div>
+                                            <button 
+                                                className="btn btn-link text-danger p-0 position-absolute end-0 top-0 mt-1" 
+                                                onClick={(e) => { e.preventDefault(); removeFromCart(item.id, item.color, item.size); }}
+                                                title="Remove"
+                                            >
+                                                <i className="bi bi-x-circle-fill"></i>
+                                            </button>
+                                        </div>
+                                    ))
+                                )}
+                            </div>
+                            {cart.length > 0 && (
+                                <div className="mt-3 pt-2">
+                                    <div className="d-flex justify-content-between mb-3 fw-black small">
+                                        <span>SUBTOTAL</span>
+                                        <span className="text-primary">₹{cartTotal.toFixed(2)}</span>
+                                    </div>
+                                    <Link to="/checkout" className="btn btn-dark w-100 rounded-pill py-2 fw-black small">PROCEED TO CHECKOUT</Link>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+
+                <button className="navbar-toggler border-0 shadow-none p-2" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                     <span className="navbar-toggler-icon"></span>
                 </button>
+
                 <div className="collapse navbar-collapse" id="navbarNav">
                     <ul className="navbar-nav me-auto ms-lg-5">
                         <li className="nav-item"><Link className="nav-link px-3 fw-bold text-white-50 hover-text-white transition-all" to="/">HOME</Link></li>
@@ -59,65 +122,6 @@ const Navbar = () => {
                         ))}
                     </ul>
                     <ul className="navbar-nav align-items-center gap-2">
-                        <li className="nav-item">
-                            <Link className="nav-link position-relative d-flex align-items-center justify-content-center bg-light rounded-circle shadow-sm hover-scale transition-all" to="/wishlist" title="Wishlist" style={{width: '45px', height: '45px'}}>
-                                <i className="bi bi-heart-fill fs-5 text-dark"></i>
-                                {wishlist.length > 0 && <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary text-white border border-2 border-white shadow-sm" style={{fontSize:'10px', zIndex: 5}}>{wishlist.length}</span>}
-                            </Link>
-                        </li>
-                        <li className="nav-item cart-dropdown-wrapper">
-                            <Link className="nav-link position-relative d-flex align-items-center justify-content-center bg-light rounded-circle shadow-sm hover-scale transition-all" to="/cart" title="Bag" style={{width: '45px', height: '45px'}}>
-                                <i className="bi bi-bag-check-fill fs-5 text-dark"></i>
-                                {cart.length > 0 && <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-dark text-white border border-2 border-white shadow-sm" style={{fontSize:'10px', zIndex: 5}}>{cart.length}</span>}
-                            </Link>
-
-                            {/* Mini Cart Dropdown */}
-                            <div className="cart-dropdown shadow-xl border-0 rounded-4 p-3 bg-white">
-                                <div className="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
-                                    <h6 className="fw-black mb-0 small text-uppercase">Your Bag ({cart.length})</h6>
-                                    <Link to="/cart" className="small fw-bold text-primary text-decoration-none">View All</Link>
-                                </div>
-                                <div className="cart-items-scroll overflow-auto" style={{maxHeight: '350px'}}>
-                                    {cart.length === 0 ? (
-                                        <div className="text-center py-4 text-muted small fw-bold">Bag is empty</div>
-                                    ) : (
-                                        cart.map((item, idx) => (
-                                            <div key={`${item.id}-${idx}`} className="d-flex gap-3 mb-3 align-items-center border-bottom border-light pb-3 position-relative group">
-                                                <img src={item.images?.[0]?.startsWith('http') ? item.images[0] : `${import.meta.env.VITE_STORAGE_URL}/${item.images?.[0]}`} alt={item.name} className="rounded-3 shadow-sm border" style={{width: '50px', height: '50px', objectFit: 'cover'}} />
-                                                <div className="flex-grow-1 overflow-hidden pe-3">
-                                                    <h6 className="fw-bold mb-0 text-truncate small">{item.name}</h6>
-                                                    <div className="d-flex gap-2 small opacity-75 fw-bold" style={{fontSize: '0.7rem'}}>
-                                                        <span>{item.size}</span>
-                                                        <span>•</span>
-                                                        <span>{item.color}</span>
-                                                    </div>
-                                                    <div className="d-flex justify-content-between align-items-center mt-1">
-                                                        <span className="fw-black text-primary small">₹{item.price}</span>
-                                                        <span className="badge bg-light text-dark border small fw-bold" style={{fontSize: '0.65rem'}}>x{item.quantity}</span>
-                                                    </div>
-                                                </div>
-                                                <button 
-                                                    className="btn btn-link text-danger p-0 position-absolute end-0 top-0 mt-1" 
-                                                    onClick={(e) => { e.preventDefault(); removeFromCart(item.id, item.color, item.size); }}
-                                                    title="Remove"
-                                                >
-                                                    <i className="bi bi-x-circle-fill"></i>
-                                                </button>
-                                            </div>
-                                        ))
-                                    )}
-                                </div>
-                                {cart.length > 0 && (
-                                    <div className="mt-3 pt-2">
-                                        <div className="d-flex justify-content-between mb-3 fw-black small">
-                                            <span>SUBTOTAL</span>
-                                            <span className="text-primary">₹{cartTotal.toFixed(2)}</span>
-                                        </div>
-                                        <Link to="/checkout" className="btn btn-dark w-100 rounded-pill py-2 fw-black small">PROCEED TO CHECKOUT</Link>
-                                    </div>
-                                )}
-                            </div>
-                        </li>
                         {user ? (
                             <li className="nav-item dropdown">
                                 <a className="nav-link dropdown-toggle text-white fw-bold d-flex align-items-center glass p-2 rounded-pill px-3 shadow-sm" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
@@ -143,6 +147,21 @@ const Navbar = () => {
             </div>
             <style>{`
                 .small-caps { font-variant: small-caps; }
+                .nav-icon-btn {
+                    width: 40px;
+                    height: 40px;
+                    font-size: 1.1rem;
+                    transition: var(--transition);
+                }
+                .nav-icon-btn:hover { transform: translateY(-2px); }
+                .icon-badge {
+                    position: absolute;
+                    top: -5px;
+                    right: -5px;
+                    font-size: 10px;
+                    padding: 4px 6px;
+                    z-index: 5;
+                }
                 .cart-dropdown-wrapper { position: relative; }
                 .cart-dropdown {
                     position: absolute;
@@ -164,6 +183,19 @@ const Navbar = () => {
                 }
                 .cart-items-scroll::-webkit-scrollbar { width: 4px; }
                 .cart-items-scroll::-webkit-scrollbar-thumb { background: #eee; border-radius: 10px; }
+                
+                @media (max-width: 991.98px) {
+                    .navbar-toggler {
+                        border: 1px solid rgba(255,255,255,0.2) !important;
+                        background: rgba(255,255,255,0.1) !important;
+                    }
+                    .navbar-toggler-icon {
+                        filter: invert(1) brightness(2);
+                    }
+                    .logo-img { height: 45px !important; }
+                    .logo-placeholder { width: 40px !important; height: 40px !important; }
+                    .nav-icon-btn { width: 36px; height: 36px; font-size: 1rem; }
+                }
             `}</style>
         </nav>
     );
