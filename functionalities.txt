@@ -1,0 +1,50 @@
+# PROJECT FUNCTIONALITIES & TECHNICAL ARCHITECTURE
+
+## 1. BACKEND (Laravel 12.x)
+
+### Packages Used:
+- **laravel/framework (v12.0):** Core engine. Provides MVC architecture, routing, and ORM.
+- **laravel/sanctum (v4.0):** Lightweight authentication for SPAs and mobile apps using tokens.
+- **barryvdh/laravel-dompdf (v3.x):** Used for generating PDF invoices and reports.
+- **maatwebsite/excel (v3.1):** Enables high-performance Excel/CSV exports for inventory and orders.
+- **razorpay/razorpay (v2.9):** Integration for Indian domestic payment gateway.
+- **stripe/stripe-php (v19.3):** Integration for international credit card payments.
+- **twilio/sdk (v8.11):** SMS notifications for order status and OTPs.
+
+### Technical Topics & Rationale:
+- **RESTful API Design:** Decouples the frontend from the backend, allowing independent scaling and the possibility of future mobile app integration.
+- **Sanctum Authentication:** Uses Bearer tokens. We chose this over traditional sessions to handle Cross-Origin (CORS) requests from the React frontend more securely.
+- **Eloquent ORM & Migrations:** Provides a fluent way to manage the SQLite database without writing raw SQL, ensuring database version control.
+- **Middleware (Admin & Sanctum):** Implements multi-layered security. 'sanctum' ensures the user is logged in, while 'admin' checks specifically for administrative privileges.
+- **File Storage (Symbolic Linking):** Uses Laravel's Storage facade to manage product images, banners, and logos, abstracting the physical file system for security.
+- **Massive Data Handling (Seeders/Factories):** Used to populate the store with realistic data (100+ products, categories) instantly for development.
+- **Diagnostic Logging:** Custom SystemController reads daily logs to help administrators debug errors without server terminal access.
+
+---
+
+## 2. FRONTEND (React 19.x)
+
+### Packages Used:
+- **react (v19.2):** Core UI library for building component-based interfaces.
+- **react-router-dom (v7.13):** Handles client-side routing and protected route logic.
+- **axios (v1.x):** HTTP client used to communicate with the Laravel API. Includes interceptors for automatic Bearer token injection.
+- **react-hook-form (v7.71):** Manages form state and validation (Login, Register, Checkout) with minimal re-renders.
+- **react-hot-toast (v2.6):** Provides beautiful, non-blocking notifications for user actions.
+- **swiper (v12.1):** Modern touch slider for the hero banner and product showcases.
+- **bootstrap (v5.3):** CSS framework for responsive grid layouts and utility classes.
+
+### Technical Topics & Rationale:
+- **Context API (State Management):** Used for Auth, Cart, and Wishlist. This avoids "prop drilling" and ensures that cart counts and user status are synchronized across all pages instantly.
+- **Protected Routes:** A higher-order component that checks user roles before rendering pages, redirecting unauthenticated users to the login screen.
+- **Environment Variables (.env):** Keeps backend URLs and API keys out of the code, allowing easy switching between localhost and production.
+- **Lazy Loading/Preloaders:** Implemented custom loaders to improve perceived performance while waiting for API responses.
+- **Interceptors:** Axios interceptors automatically attach the `Authorization: Bearer <token>` header to every request if the user is logged in.
+- **Responsive UI Components:** Designed for mobile-first experience using Bootstrap's 12-column grid.
+
+---
+
+## 3. KEY INTEGRATED FEATURES
+1. **Approval System:** All product reviews are "Pending" by default and only appear on the product page after Admin approval.
+2. **Dynamic Configuration:** Site name, logo, social links, and favicons are all manageable from the Admin Dashboard and update the UI in real-time.
+3. **Inventory Intelligence:** Automatic "Low Stock" alerts and stock management interface for high-efficiency store operations.
+4. **System Health:** Integrated DB backup, log viewing, and cache management tools within the dashboard.
