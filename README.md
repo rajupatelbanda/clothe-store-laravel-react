@@ -1,4 +1,4 @@
-# Gemini Cloth Store - Premium E-Commerce Solution
+# Cloth Store - Premium E-Commerce Solution
 
 A modern, full-stack e-commerce application built with **Laravel 12 (Backend)** and **React 19 (Frontend)**. This project features a robust admin dashboard, dynamic content management, and a seamless shopping experience tailored for the Indian market with Razorpay and COD support.
 
@@ -57,4 +57,4 @@ For a deep dive into the implemented features, packages used, and architectural 
 5.  Open a Pull Request
 
 ---
-**Built by [Raju Patel]**
+**Built by [Raju Patel Banda]**
