@@ -9,8 +9,21 @@ const ManageCategories = () => {
     const [loading, setLoading] = useState(true);
     const [name, setName] = useState('');
     const [image, setImage] = useState(null);
+    const [existingImage, setExistingImage] = useState(null);
     const [editingId, setEditingId] = useState(null);
     const [search, setSearch] = useState('');
+
+    // ... inside component
+    const resetCategoryForm = () => {
+        setName(''); setImage(null); setEditingId(null); setExistingImage(null);
+    };
+
+    const handleCategoryEdit = (cat) => {
+        setEditingId(cat.id);
+        setName(cat.name);
+        setExistingImage(cat.image);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
     
     // Subcategory Form State
     const [subName, setSubName] = useState('');
@@ -93,15 +106,24 @@ const ManageCategories = () => {
             <div className="row g-5">
                 <div className="col-lg-4">
                     <div className="card shadow-2xl border-0 rounded-5 p-5 bg-white mb-5 border-bottom border-primary border-4 border-opacity-10">
-                        <h5 className="fw-black mb-4">Add Master Category</h5>
+                        <div className="d-flex justify-content-between align-items-center mb-4">
+                            <h5 className="fw-black m-0">{editingId ? 'Refine Category' : 'New Master Category'}</h5>
+                            {editingId && <button className="btn btn-sm btn-outline-dark rounded-pill px-2 fw-bold" onClick={resetCategoryForm} style={{fontSize: '0.7rem'}}>DISCARD</button>}
+                        </div>
                         <form onSubmit={handleCategorySubmit}>
                             <div className="mb-4">
                                 <label className="form-label fw-bold small text-muted">NAME</label>
                                 <input type="text" className="form-control rounded-pill p-3 border-0 bg-light fw-bold" value={name} onChange={(e) => setName(e.target.value)} required />
                             </div>
                             <div className="mb-5">
-                                <label className="form-label fw-bold small text-muted">COVER IMAGE</label>
+                                <label className="form-label fw-bold small text-muted">COVER IMAGE (NEW)</label>
                                 <input type="file" className="form-control rounded-pill p-2 border-0 bg-light" onChange={(e) => setImage(e.target.files[0])} accept="image/*" />
+                                {editingId && existingImage && (
+                                    <div className="mt-2 text-center">
+                                        <img src={existingImage.startsWith('http') ? existingImage : `${import.meta.env.VITE_STORAGE_URL}/${existingImage}`} height="60" className="rounded border shadow-sm" alt="current" />
+                                        <p className="x-small fw-bold text-muted mt-1">Current Image</p>
+                                    </div>
+                                )}
                             </div>
                             <button type="submit" className="btn btn-primary w-100 py-3 rounded-pill fw-black shadow-lg">SAVE CATEGORY</button>
                         </form>
@@ -157,7 +179,7 @@ const ManageCategories = () => {
                                                 ))}
                                             </td>
                                             <td className="text-end">
-                                                <button className="btn btn-light rounded-circle p-2 me-2 shadow-sm text-primary" onClick={() => {setEditingId(cat.id); setName(cat.name); window.scrollTo(0,0);}}><i className="bi bi-pencil-square fs-5"></i></button>
+                                                <button className="btn btn-light rounded-circle p-2 me-2 shadow-sm text-primary" onClick={() => handleCategoryEdit(cat)}><i className="bi bi-pencil-square fs-5"></i></button>
                                                 <button className="btn btn-light rounded-circle p-2 shadow-sm text-danger" onClick={async () => {if(window.confirm('Delete Category?')) {await api.delete(`/admin/categories/${cat.id}`); fetchCategories();}}}><i className="bi bi-trash3-fill fs-5"></i></button>
                                             </td>
                                         </tr>
