@@ -20,64 +20,75 @@ const ProductDetail = () => {
     const [selectedColor, setSelectedColor] = useState('');
     const [selectedSize, setSelectedSize] = useState('');
     const [quantity, setQuantity] = useState(1);
-    const [displayPrice, setDisplayPrice] = useState(0);
-    const [activeStock, setActiveStock] = useState(0);
-    const [mainImage, setMainImage] = useState('');
+        const [displayPrice, setDisplayPrice] = useState(0);
+        const [originalPrice, setOriginalPrice] = useState(0);
+        const [activeStock, setActiveStock] = useState(0);
+        const [mainImage, setMainImage] = useState('');
     
-    const { user } = useContext(AuthContext);
-    const [reviewRating, setReviewRating] = useState(5);
-    const [reviewComment, setReviewComment] = useState('');
-
-    const { addToCart } = useContext(CartContext);
-    const { toggleWishlist, isInWishlist } = useContext(WishlistContext);
-    const navigate = useNavigate();
-
-    useEffect(() => {
-        const fetchProduct = async () => {
-            setLoading(true);
-            try {
-                const response = await api.get(`/products/${slug}`);
-                const data = response.data;
-                setProduct(data);
-                setDisplayPrice(parseFloat(data.discount_price || data.price));
-                setActiveStock(data.stock);
-                
-                const firstImg = data.images?.[0]?.startsWith('http') ? data.images[0] : `${import.meta.env.VITE_STORAGE_URL}/${data.images?.[0]}`;
-                setMainImage(firstImg || 'https://via.placeholder.com/800x1000');
-
-                // Auto-select first available variation if applicable
-                if (data.variations?.length > 0) {
-                    setSelectedColor(data.variations[0].color || '');
-                    setSelectedSize(data.variations[0].size || '');
+        const { user } = useContext(AuthContext);
+        const [reviewRating, setReviewRating] = useState(5);
+        const [reviewComment, setReviewComment] = useState('');
+    
+        const { addToCart } = useContext(CartContext);
+        const { toggleWishlist, isInWishlist } = useContext(WishlistContext);
+        const navigate = useNavigate();
+    
+        useEffect(() => {
+            const fetchProduct = async () => {
+                setLoading(true);
+                try {
+                    const response = await api.get(`/products/${slug}`);
+                    const data = response.data;
+                    setProduct(data);
+                    
+                    // Initial prices
+                    setOriginalPrice(parseFloat(data.price));
+                    setDisplayPrice(parseFloat(data.discount_price || data.price));
+                    setActiveStock(data.stock);
+    
+                    const firstImg = data.images?.[0]?.startsWith('http') ? data.images[0] : `${import.meta.env.VITE_STORAGE_URL}/${data.images?.[0]}`;  
+                    setMainImage(firstImg || 'https://via.placeholder.com/800x1000');
+    
+                    // Auto-select first available variation if applicable
+                    if (data.variations?.length > 0) {
+                        setSelectedColor(data.variations[0].color || '');
+                        setSelectedSize(data.variations[0].size || '');
+                    }
+    
+                    const similarRes = await api.get('/products', { params: { category: data.category_id, limit: 10 } });
+                    setSimilarProducts(similarRes.data.data ? similarRes.data.data.filter(p => p.id !== data.id) : []);
+                } catch (error) {
+                    toast.error("Product not found");
+                    navigate('/shop');
                 }
-                
-                const similarRes = await api.get('/products', { params: { category: data.category_id, limit: 10 } });
-                setSimilarProducts(similarRes.data.data ? similarRes.data.data.filter(p => p.id !== data.id) : []);
-            } catch (error) {
-                toast.error("Product not found");
-                navigate('/shop');
+                setLoading(false);
+            };
+            fetchProduct();
+        }, [slug, navigate]);
+    
+        useEffect(() => {
+            if (!product) return;
+            const variation = product.variations?.find(v =>
+                (!v.color || v.color === selectedColor) &&
+                (!v.size || v.size === selectedSize)
+            );
+    
+            if (variation) {
+                const vPrice = parseFloat(variation.price);
+                setOriginalPrice(vPrice);
+                if (product.discount_percentage) {
+                    const discounted = vPrice - (vPrice * product.discount_percentage / 100);
+                    setDisplayPrice(discounted.toFixed(2));
+                } else {
+                    setDisplayPrice(vPrice.toFixed(2));
+                }
+                setActiveStock(variation.stock);
+            } else {
+                setOriginalPrice(parseFloat(product.price));
+                setDisplayPrice(parseFloat(product.discount_price || product.price).toFixed(2));
+                setActiveStock(product.stock);
             }
-            setLoading(false);
-        };
-        fetchProduct();
-    }, [slug, navigate]);
-
-    useEffect(() => {
-        if (!product) return;
-        const variation = product.variations?.find(v => 
-            (!v.color || v.color === selectedColor) && 
-            (!v.size || v.size === selectedSize)
-        );
-
-        if (variation) {
-            setDisplayPrice(parseFloat(variation.price).toFixed(2));
-            setActiveStock(variation.stock);
-        } else {
-            setDisplayPrice(parseFloat(product.discount_price || product.price).toFixed(2));
-            setActiveStock(product.stock);
-        }
-    }, [selectedSize, selectedColor, product]);
-
+        }, [selectedSize, selectedColor, product]);
     const handleAddToCart = () => {
         if (activeStock <= 0) return toast.error('Out of stock');
         addToCart(product, selectedColor, selectedSize, quantity);
@@ -145,7 +156,7 @@ const ProductDetail = () => {
                         <h1 className="fw-black text-dark mb-3 mt-1" style={{fontSize: '2.5rem'}}>{product.name}</h1>
                         <div className="d-flex align-items-center gap-3 mb-4">
                             <h2 className="fw-black text-primary mb-0">₹{displayPrice}</h2>
-                            {product.discount_price && <span className="text-muted text-decoration-line-through fw-bold">₹{product.price}</span>}
+                            {product.discount_percentage > 0 && <span className="text-muted text-decoration-line-through fw-bold">₹{originalPrice}</span>}
                             <span className="badge bg-light text-dark border ms-2 rounded-pill px-3 py-2 small fw-bold">
                                 {activeStock > 0 ? `${activeStock} in stock` : 'Out of Stock'}
                             </span>
