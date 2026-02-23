@@ -5,8 +5,30 @@ const User = require('../models/User');
 // @route   GET /api/admin/users
 // @access  Private/Admin
 const getUsers = asyncHandler(async (req, res) => {
-  const users = await User.find({});
-  res.json(users);
+  const pageSize = 10;
+  const page = Number(req.query.page) || 1;
+
+  const count = await User.countDocuments({});
+  const users = await User.find({})
+    .limit(pageSize)
+    .skip(pageSize * (page - 1));
+
+  const mappedUsers = users.map(user => ({
+    ...user._doc,
+    id: user._id,
+    created_at: user.createdAt,
+  }));
+
+  if (req.query.admin) {
+    res.json({
+      data: mappedUsers,
+      current_page: page,
+      last_page: Math.ceil(count / pageSize),
+      total: count
+    });
+  } else {
+    res.json(mappedUsers);
+  }
 });
 
 // @desc    Delete user
