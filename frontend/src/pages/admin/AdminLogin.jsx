@@ -13,15 +13,22 @@ const AdminLogin = () => {
     const onSubmit = async (data) => {
         const loadingToast = toast.loading('Authenticating admin...');
         try {
+            console.log("Attempting Admin Login with:", data.email);
             const response = await api.post('/login', data);
+            console.log("Admin Login Response:", response.data);
+            
             if (response.data.user.role !== 'admin') {
+                console.log("User is not an admin. Role:", response.data.user.role);
                 toast.error('Unauthorized. This area is for administrators only.', { id: loadingToast });
                 return;
             }
+            
             login(response.data.access_token, response.data.user);
             toast.success('Admin login successful!', { id: loadingToast });
+            console.log("Redirecting to /admin");
             navigate('/admin');
         } catch (error) {
+            console.error("Admin Login Error:", error);
             toast.error(error.response?.data?.message || 'Login failed', { id: loadingToast });
         }
     };

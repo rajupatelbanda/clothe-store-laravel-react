@@ -14,10 +14,18 @@ const Login = () => {
         const loadingToast = toast.loading('Logging in...');
         try {
             const response = await api.post('/login', data);
+            console.log("Login Response User:", response.data.user);
             login(response.data.access_token, response.data.user);
             toast.success('Logged in successfully!', { id: loadingToast });
-            navigate('/');
+            if (response.data.user.role === 'admin') {
+                console.log("Redirecting to /admin");
+                navigate('/admin');
+            } else {
+                console.log("Redirecting to /");
+                navigate('/');
+            }
         } catch (error) {
+            console.error("Login Error:", error);
             toast.error(error.response?.data?.message || 'Login failed', { id: loadingToast });
         }
     };
