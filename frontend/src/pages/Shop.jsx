@@ -197,14 +197,13 @@ const Shop = () => {
                                                 <button className={`wishlist-btn border-0 shadow-sm ${isInWishlist(product.id) ? 'active' : ''}`} onClick={() => toggleWishlist(product.id)} style={{position:'absolute', top:'12px', right:'12px', zIndex:5, background:'white', borderRadius:'50%', width:'35px', height:'35px', display:'flex', alignItems:'center', justifyContent:'center'}}>
                                                     <i className={`bi ${isInWishlist(product.id) ? 'bi-heart-fill text-danger' : 'bi-heart'}`}></i>
                                                 </button>
-                                                <Link to={`/product/${product.slug}`}>
-                                                    <img 
-                                                        src={product.images && product.images[0] ? (product.images[0].startsWith('http') ? product.images[0] : `${import.meta.env.VITE_STORAGE_URL}/${product.images[0]}`) : `https://images.unsplash.com/photo-1512436991641-6745cdb1723f?q=80&w=1000`} 
-                                                        className="w-100 h-100 object-fit-cover transition-all" 
-                                                        alt={product.name} 
-                                                    />
-                                                </Link>
-                                                {product.discount_price && <span className="position-absolute top-0 start-0 m-2 badge bg-danger rounded-pill px-2">SALE</span>}
+                                                                                                <Link to={`/product/${product.slug}`}>
+                                                                                                    <img
+                                                                                                        src={product.images && product.images[0] ? (product.images[0].startsWith('http') ? product.images[0] : `/storage/${product.images[0]}`) : `https://images.unsplash.com/photo-1512436991641-6745cdb1723f?q=80&w=1000`}  
+                                                                                                        className="w-100 h-100 object-fit-cover transition-all"
+                                                                                                        alt={product.name}
+                                                                                                    />
+                                                                                                </Link>                                                {product.discount_price && <span className="position-absolute top-0 start-0 m-2 badge bg-danger rounded-pill px-2">SALE</span>}
                                             </div>
                                             <div className="card-body px-0 pt-3">
                                                 <p className="text-muted text-uppercase fw-bold mb-1" style={{fontSize: '0.6rem', letterSpacing: '1.5px'}}>{product.category?.name}</p>
