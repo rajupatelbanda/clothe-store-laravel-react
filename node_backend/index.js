@@ -66,19 +66,15 @@ app.use('/api', razorpayRoutes);
 app.use('/api', dashboardRoutes);
 app.use('/api', systemRoutes);
 
-const fs = require('fs');
-
 // Error Handling
 app.use((err, req, res, next) => {
   const statusCode = res.statusCode === 200 ? 500 : res.statusCode;
 
-  // Log the error
-  const logMessage = `[${new Date().toISOString()}] ${req.method} ${req.url} - ${statusCode}: ${err.message}\n${err.stack}\n\n`;
-  const logDir = path.join(__dirname, 'logs');
-  if (!fs.existsSync(logDir)) {
-    fs.mkdirSync(logDir);
+  // Log the error to console for Vercel logs
+  console.error(`[${new Date().toISOString()}] ${req.method} ${req.url} - ${statusCode}: ${err.message}`);
+  if (process.env.NODE_ENV !== 'production') {
+    console.error(err.stack);
   }
-  fs.appendFileSync(path.join(logDir, 'system.log'), logMessage);
 
   res.status(statusCode);
   res.json({
