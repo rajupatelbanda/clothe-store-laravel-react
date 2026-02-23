@@ -6,7 +6,7 @@ const {
 } = require('../controllers/settingController');
 const { protect, admin } = require('../middleware/authMiddleware');
 
-router.get('/', getSettings);
+router.get('/settings', getSettings);
 
 // Admin routes
 router.post('/admin/settings', protect, admin, updateSettings);

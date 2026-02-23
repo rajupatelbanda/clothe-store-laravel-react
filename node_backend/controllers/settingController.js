@@ -6,7 +6,14 @@ const Setting = require('../models/Setting');
 // @access  Public
 const getSettings = asyncHandler(async (req, res) => {
   const settings = await Setting.findOne({});
-  res.json(settings);
+  if (settings) {
+    res.json({
+      ...settings._doc,
+      id: settings._id,
+    });
+  } else {
+    res.json({});
+  }
 });
 
 // @desc    Update site settings
@@ -41,7 +48,10 @@ const updateSettings = asyncHandler(async (req, res) => {
     settings.social_links = social_links || settings.social_links;
 
     const updatedSettings = await settings.save();
-    res.json(updatedSettings);
+    res.json({
+      ...updatedSettings._doc,
+      id: updatedSettings._id,
+    });
   } else {
     settings = await Setting.create({
       site_name,
@@ -55,7 +65,10 @@ const updateSettings = asyncHandler(async (req, res) => {
       tax,
       social_links,
     });
-    res.status(201).json(settings);
+    res.status(201).json({
+      ...settings._doc,
+      id: settings._id,
+    });
   }
 });
 

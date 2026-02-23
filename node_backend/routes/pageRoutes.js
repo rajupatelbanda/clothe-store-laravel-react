@@ -9,13 +9,14 @@ const {
 } = require('../controllers/pageController');
 const { protect, admin } = require('../middleware/authMiddleware');
 
-router.get('/', getPages);
+router.get('/pages', getPages);
 router.get('/admin/pages', protect, admin, getPages);
-router.get('/:slug', getPageBySlug);
+router.get('/pages/:slug', getPageBySlug);
 
 // Admin routes
 router.post('/admin/pages', protect, admin, createPage);
 router.put('/admin/pages/:id', protect, admin, updatePage);
+router.post('/admin/pages/:id', protect, admin, updatePage);
 router.delete('/admin/pages/:id', protect, admin, deletePage);
 
 module.exports = router;
