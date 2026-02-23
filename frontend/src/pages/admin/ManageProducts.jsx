@@ -3,6 +3,7 @@ import AdminLayout from './AdminLayout';
 import api from '../../utils/api';
 import { toast } from 'react-hot-toast';
 import { Link } from 'react-router-dom';
+import { PaginationControl } from 'react-bootstrap-pagination-control';
 
 const ManageProducts = () => {
     const [products, setProducts] = useState([]);
@@ -323,10 +324,18 @@ const ManageProducts = () => {
                     )}
                 </div>
                 {totalPages > 1 && (
-                    <div className="d-flex justify-content-center mt-5 gap-2">
-                        {[...Array(totalPages)].map((_, i) => (
-                            <button key={i} className={`btn rounded-circle fw-black transition-all ${currentPage === i+1 ? 'btn-primary shadow-primary text-white scale-110' : 'bg-light text-dark'}`} style={{width: '50px', height: '50px'}} onClick={() => setCurrentPage(i+1)}>{i+1}</button>
-                        ))}
+                    <div className="d-flex justify-content-center mt-5">
+                        <PaginationControl
+                            page={currentPage}
+                            between={4}
+                            total={totalPages}
+                            limit={1}
+                            change={(page) => {
+                                setCurrentPage(page);
+                                window.scrollTo({ top: 0, behavior: 'smooth' });
+                            }}
+                            ellipsis={1}
+                        />
                     </div>
                 )}
             </div>
