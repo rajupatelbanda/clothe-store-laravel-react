@@ -46,9 +46,8 @@ const ProductDetail = () => {
                     setDisplayPrice(parseFloat(data.discount_price || data.price));
                     setActiveStock(data.stock);
     
-                    const firstImg = data.images?.[0]?.startsWith('http') ? data.images[0] : `${import.meta.env.VITE_STORAGE_URL}/${data.images?.[0]}`;  
-                    setMainImage(firstImg || 'https://via.placeholder.com/800x1000');
-    
+                                    const firstImg = data.images?.[0]?.startsWith('http') ? data.images[0] : `/storage/${data.images?.[0]}`;  
+                                    setMainImage(firstImg || 'https://via.placeholder.com/800x1000');    
                     // Auto-select first available variation if applicable
                     if (data.variations?.length > 0) {
                         setSelectedColor(data.variations[0].color || '');
@@ -122,7 +121,7 @@ const ProductDetail = () => {
                         </div>
                         <div className="row g-2">
                             {product.images?.map((img, i) => {
-                                const url = img.startsWith('http') ? img : `${import.meta.env.VITE_STORAGE_URL}/${img}`;
+                                const url = img.startsWith('http') ? img : `/storage/${img}`;
                                 return (
                                     <div className="col-3" key={i}>
                                         <div 
@@ -141,7 +140,7 @@ const ProductDetail = () => {
                                 <h6 className="fw-black text-uppercase small opacity-50 mb-3">Experience the Fabric</h6>
                                 <div className="rounded-4 overflow-hidden border">
                                     <video controls className="w-100 bg-dark" style={{maxHeight: '250px'}}>
-                                        <source src={product.video.startsWith('http') ? product.video : `${import.meta.env.VITE_STORAGE_URL}/${product.video}`} type="video/mp4" />
+                                        <source src={product.video.startsWith('http') ? product.video : `/storage/${product.video}`} type="video/mp4" />
                                     </video>
                                 </div>
                             </div>
@@ -260,7 +259,7 @@ const ProductDetail = () => {
                                 <Link to={`/product/${p.slug}`} className="text-decoration-none group">
                                     <div className="card border-0 bg-white product-card">
                                         <div className="rounded-4 overflow-hidden mb-2" style={{ height: '250px' }}>
-                                            <img src={p.images?.[0]?.startsWith('http') ? p.images[0] : `${import.meta.env.VITE_STORAGE_URL}/${p.images?.[0]}`} className="w-100 h-100 object-fit-cover transition-all" />
+                                            <img src={p.images?.[0]?.startsWith('http') ? p.images[0] : `/storage/${p.images?.[0]}`} className="w-100 h-100 object-fit-cover transition-all" />
                                         </div>
                                         <h6 className="text-dark fw-bold mb-1 text-truncate">{p.name}</h6>
                                         <span className="text-primary fw-black small">₹{p.discount_price || p.price}</span>
