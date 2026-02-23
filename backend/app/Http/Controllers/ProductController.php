@@ -13,7 +13,7 @@ class ProductController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Product::with(['category', 'brand', 'subcategory']);
+        $query = Product::with(['category', 'brand', 'subcategory', 'variations']);
 
         if (!$request->has('admin')) {
             $query->where('status', true);
@@ -75,12 +75,12 @@ class ProductController extends Controller
 
     public function featured()
     {
-        return response()->json(Product::where('status', true)->where('is_featured', true)->with(['category', 'brand', 'subcategory'])->limit(8)->get());
+        return response()->json(Product::where('status', true)->where('is_featured', true)->with(['category', 'brand', 'subcategory', 'variations'])->limit(8)->get());
     }
 
     public function trending()
     {
-        return response()->json(Product::where('status', true)->where('is_trending', true)->with(['category', 'brand', 'subcategory'])->limit(8)->get());
+        return response()->json(Product::where('status', true)->where('is_trending', true)->with(['category', 'brand', 'subcategory', 'variations'])->limit(8)->get());
     }
 
     public function lowStock()

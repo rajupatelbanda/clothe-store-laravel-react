@@ -130,7 +130,7 @@ const ProductDetail = () => {
                                 <h6 className="fw-black text-uppercase small opacity-50 mb-3">Experience the Fabric</h6>
                                 <div className="rounded-4 overflow-hidden border">
                                     <video controls className="w-100 bg-dark" style={{maxHeight: '250px'}}>
-                                        <source src={`${import.meta.env.VITE_STORAGE_URL}/${product.video}`} type="video/mp4" />
+                                        <source src={product.video.startsWith('http') ? product.video : `${import.meta.env.VITE_STORAGE_URL}/${product.video}`} type="video/mp4" />
                                     </video>
                                 </div>
                             </div>
@@ -184,6 +184,20 @@ const ProductDetail = () => {
                         <button className={`btn rounded-circle p-3 shadow-sm border ${isInWishlist(product.id) ? 'bg-danger text-white' : 'bg-white'}`} onClick={() => toggleWishlist(product.id)}>
                             <i className={`bi bi-heart${isInWishlist(product.id) ? '-fill' : ''}`}></i>
                         </button>
+                    </div>
+
+                    {/* Social Share */}
+                    <div className="mb-5">
+                        <h6 className="fw-black text-uppercase small mb-3 opacity-50">Share with Friends</h6>
+                        <div className="d-flex gap-2">
+                            <a href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`} target="_blank" rel="noopener noreferrer" className="btn btn-outline-dark rounded-circle share-btn"><i className="bi bi-facebook"></i></a>
+                            <a href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(product.name)}`} target="_blank" rel="noopener noreferrer" className="btn btn-outline-dark rounded-circle share-btn"><i className="bi bi-twitter-x"></i></a>
+                            <a href={`https://wa.me/?text=${encodeURIComponent(product.name + ' ' + window.location.href)}`} target="_blank" rel="noopener noreferrer" className="btn btn-outline-dark rounded-circle share-btn"><i className="bi bi-whatsapp"></i></a>
+                            <button onClick={() => {
+                                navigator.clipboard.writeText(window.location.href);
+                                toast.success('Link copied to clipboard!');
+                            }} className="btn btn-outline-dark rounded-circle share-btn"><i className="bi bi-link-45deg"></i></button>
+                        </div>
                     </div>
 
                     {/* Features Summary */}
@@ -250,6 +264,20 @@ const ProductDetail = () => {
                 .cursor-pointer { cursor: pointer; }
                 .x-small { font-size: 0.7rem; }
                 .shadow-primary { box-shadow: 0 10px 20px -5px rgba(255, 94, 120, 0.4); }
+                .share-btn {
+                    width: 40px;
+                    height: 40px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    transition: all 0.3s ease;
+                }
+                .share-btn:hover {
+                    background-color: #ff5e78;
+                    border-color: #ff5e78;
+                    color: white;
+                    transform: translateY(-3px);
+                }
             `}</style>
         </div>
     );

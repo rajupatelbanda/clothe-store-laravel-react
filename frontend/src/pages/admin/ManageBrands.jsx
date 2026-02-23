@@ -8,8 +8,20 @@ const ManageBrands = () => {
     const [loading, setLoading] = useState(true);
     const [name, setName] = useState('');
     const [image, setImage] = useState(null);
+    const [existingImage, setExistingImage] = useState(null);
     const [editingId, setEditingId] = useState(null);
     const [search, setSearch] = useState('');
+
+    const resetBrandForm = () => {
+        setName(''); setImage(null); setEditingId(null); setExistingImage(null);
+    };
+
+    const handleBrandEdit = (brand) => {
+        setEditingId(brand.id);
+        setName(brand.name);
+        setExistingImage(brand.image);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
     
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
@@ -58,15 +70,24 @@ const ManageBrands = () => {
             <div className="row g-5">
                 <div className="col-lg-4">
                     <div className="card shadow-2xl border-0 rounded-5 p-5 bg-white border-bottom border-primary border-4 border-opacity-10">
-                        <h5 className="fw-black mb-4">{editingId ? 'Refine Label' : 'New Label Entry'}</h5>
+                        <div className="d-flex justify-content-between align-items-center mb-4">
+                            <h5 className="fw-black m-0">{editingId ? 'Refine Label' : 'New Label Entry'}</h5>
+                            {editingId && <button className="btn btn-sm btn-outline-dark rounded-pill px-2 fw-bold" onClick={resetBrandForm} style={{fontSize: '0.7rem'}}>DISCARD</button>}
+                        </div>
                         <form onSubmit={handleSubmit}>
                             <div className="mb-4">
                                 <label className="form-label fw-bold small text-muted">BRAND NAME</label>
                                 <input type="text" className="form-control rounded-pill p-3 border-0 bg-light fw-bold" value={name} onChange={(e) => setName(e.target.value)} required />
                             </div>
                             <div className="mb-5">
-                                <label className="form-label fw-bold small text-muted">OFFICIAL LOGO</label>
+                                <label className="form-label fw-bold small text-muted">OFFICIAL LOGO (NEW)</label>
                                 <input type="file" className="form-control rounded-pill p-2 border-0 bg-light fw-bold" onChange={(e) => setImage(e.target.files[0])} accept="image/*" />
+                                {editingId && existingImage && (
+                                    <div className="mt-2 text-center">
+                                        <img src={existingImage.startsWith('http') ? existingImage : `${import.meta.env.VITE_STORAGE_URL}/${existingImage}`} height="60" className="rounded border shadow-sm" alt="current" />
+                                        <p className="x-small fw-bold text-muted mt-1">Current Logo</p>
+                                    </div>
+                                )}
                             </div>
                             <button type="submit" className="btn btn-primary w-100 py-3 rounded-pill fw-black shadow-lg">SAVE LABEL</button>
                         </form>
@@ -95,7 +116,7 @@ const ManageBrands = () => {
                                             <td className="py-3"><img src={brand.image?.startsWith('http') ? brand.image : (brand.image ? `http://localhost:8000/storage/${brand.image}` : 'https://ui-avatars.com/api/?name='+brand.name)} className="rounded-circle shadow-sm border border-light" width="50" height="50" style={{objectFit: 'cover'}} /></td>
                                             <td className="fw-black text-dark fs-5">{brand.name}</td>
                                             <td className="text-end">
-                                                <button className="btn btn-light rounded-circle p-2 me-2 shadow-sm text-primary" onClick={() => {setEditingId(brand.id); setName(brand.name); window.scrollTo(0,0);}}><i className="bi bi-pencil-square fs-5"></i></button>
+                                                <button className="btn btn-light rounded-circle p-2 me-2 shadow-sm text-primary" onClick={() => handleBrandEdit(brand)}><i className="bi bi-pencil-square fs-5"></i></button>
                                                 <button className="btn btn-light rounded-circle p-2 shadow-sm text-danger" onClick={async () => {if(window.confirm('Delete Brand?')) {await api.delete(`/admin/brands/${brand.id}`); fetchBrands();}}}><i className="bi bi-trash3-fill fs-5"></i></button>
                                             </td>
                                         </tr>
