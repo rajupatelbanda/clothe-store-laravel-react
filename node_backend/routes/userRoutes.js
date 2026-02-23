@@ -7,8 +7,9 @@ const {
 } = require('../controllers/userController');
 const { protect, admin } = require('../middleware/authMiddleware');
 
-router.get('/', protect, admin, getUsers);
-router.delete('/:id', protect, admin, deleteUser);
-router.patch('/:id/role', protect, admin, updateUserRole);
+router.get('/users', protect, admin, getUsers);
+router.get('/admin/users', protect, admin, getUsers);
+router.delete('/admin/users/:id', protect, admin, deleteUser);
+router.patch('/admin/users/:id/role', protect, admin, updateUserRole);
 
 module.exports = router;

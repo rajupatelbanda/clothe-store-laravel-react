@@ -3,6 +3,6 @@ const router = express.Router();
 const { getStats } = require('../controllers/dashboardController');
 const { protect, admin } = require('../middleware/authMiddleware');
 
-router.get('/stats', protect, admin, getStats);
+router.get('/admin/stats', protect, admin, getStats);
 
 module.exports = router;

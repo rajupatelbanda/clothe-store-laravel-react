@@ -51,8 +51,6 @@ const systemRoutes = require('./routes/systemRoutes');
 app.use('/api/upload', uploadRoutes);
 app.use('/api', authRoutes);
 app.use('/api', userRoutes);
-app.use('/api', dashboardRoutes);
-app.use('/api', systemRoutes);
 app.use('/api', productRoutes);
 app.use('/api', categoryRoutes);
 app.use('/api', subcategoryRoutes);
@@ -65,16 +63,22 @@ app.use('/api', settingRoutes);
 app.use('/api', reviewRoutes);
 app.use('/api', couponRoutes);
 app.use('/api', razorpayRoutes);
+app.use('/api', dashboardRoutes);
+app.use('/api', systemRoutes);
 
 const fs = require('fs');
 
 // Error Handling
 app.use((err, req, res, next) => {
   const statusCode = res.statusCode === 200 ? 500 : res.statusCode;
-  
+
   // Log the error
   const logMessage = `[${new Date().toISOString()}] ${req.method} ${req.url} - ${statusCode}: ${err.message}\n${err.stack}\n\n`;
-  fs.appendFileSync(path.join(__dirname, 'logs/system.log'), logMessage);
+  const logDir = path.join(__dirname, 'logs');
+  if (!fs.existsSync(logDir)) {
+    fs.mkdirSync(logDir);
+  }
+  fs.appendFileSync(path.join(logDir, 'system.log'), logMessage);
 
   res.status(statusCode);
   res.json({
