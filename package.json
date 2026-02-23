@@ -20,7 +20,7 @@
     "slugify": "^1.6.6"
   },
   "scripts": {
-    "build": "cd frontend && npm install && npm run build",
+    "build": "cd frontend && npm install && npm run build && cd .. && node -e \"const fs=require('fs'); fs.cpSync('frontend/dist', 'dist', {recursive:true})\"",
     "install-all": "npm install && cd frontend && npm install && cd ../node_backend && npm install"
   }
 }
