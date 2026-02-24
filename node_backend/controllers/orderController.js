@@ -20,10 +20,15 @@ const addOrderItems = asyncHandler(async (req, res) => {
     coupon_id,
   } = req.body;
 
-  if (items && items.length === 0) {
+  if (!items || items.length === 0) {
     res.status(400);
     throw new Error('No order items');
   } else {
+    if (!req.user) {
+      res.status(401);
+      throw new Error('User context missing');
+    }
+
     const order = new Order({
       user: req.user._id,
       address: address,
@@ -54,22 +59,24 @@ const addOrderItems = asyncHandler(async (req, res) => {
 
     // Send order confirmation email
     try {
-      const emailItems = createdOrderItems.map(item => `<li>${item.quantity} x Item (₹${item.price})</li>`).join('');
+      const emailItems = (createdOrderItems || []).map(item => `<li>${item.quantity} x Item (₹${item.price})</li>`).join('');
       
-      await sendEmail({
-        email: req.user.email,
-        subject: `Order Confirmation - #${createdOrder._id}`,
-        message: `Your order has been placed successfully. Order ID: ${createdOrder._id}. Total Amount: ₹${total}`,
-        html: `
-          <h1>Thank you for your order!</h1>
-          <p>Your order <strong>#${createdOrder._id}</strong> has been placed successfully.</p>
-          <p><strong>Total Amount:</strong> ₹${total}</p>
-          <p><strong>Shipping Address:</strong> ${address}</p>
-          <h3>Items:</h3>
-          <ul>${emailItems}</ul>
-          <p>We will notify you once your order is shipped.</p>
-        `
-      });
+      if (req.user && req.user.email) {
+        await sendEmail({
+          email: req.user.email,
+          subject: `Order Confirmation - #${createdOrder._id}`,
+          message: `Your order has been placed successfully. Order ID: ${createdOrder._id}. Total Amount: ₹${total}`,
+          html: `
+            <h1>Thank you for your order!</h1>
+            <p>Your order <strong>#${createdOrder._id}</strong> has been placed successfully.</p>
+            <p><strong>Total Amount:</strong> ₹${total}</p>
+            <p><strong>Shipping Address:</strong> ${address}</p>
+            <h3>Items:</h3>
+            <ul>${emailItems}</ul>
+            <p>We will notify you once your order is shipped.</p>
+          `
+        });
+      }
     } catch (error) {
       console.error('Email sending failed:', error);
       // Don't throw error here to avoid breaking the order flow
