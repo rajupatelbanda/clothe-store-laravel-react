@@ -147,12 +147,16 @@ const createProduct = asyncHandler(async (req, res) => {
   // Handle Files
   let images = [];
   if (req.files && req.files['images[]']) {
-    images = req.files['images[]'].map(file => file.path.replace(/\\/g, '/'));
+    images = req.files['images[]'].map(file => {
+      let p = file.path.replace(/\\/g, '/');
+      return p.startsWith('/tmp/') ? p.substring(1) : p;
+    });
   }
 
   let video = '';
   if (req.files && req.files['video']) {
     video = req.files['video'][0].path.replace(/\\/g, '/');
+    if (video.startsWith('/tmp/')) video = video.substring(1);
   }
 
   const parsedVariations = variations ? JSON.parse(variations).map(v => ({
@@ -208,12 +212,16 @@ const updateProduct = asyncHandler(async (req, res) => {
   if (product) {
     // Handle Files
     if (req.files && req.files['images[]']) {
-      const newImages = req.files['images[]'].map(file => file.path.replace(/\\/g, '/'));
-      product.images = newImages; // In a real app, you might want to append or delete specific ones
+      const newImages = req.files['images[]'].map(file => {
+        let p = file.path.replace(/\\/g, '/');
+        return p.startsWith('/tmp/') ? p.substring(1) : p;
+      });
+      product.images = newImages; 
     }
 
     if (req.files && req.files['video']) {
-      product.video = req.files['video'][0].path.replace(/\\/g, '/');
+      let v = req.files['video'][0].path.replace(/\\/g, '/');
+      product.video = v.startsWith('/tmp/') ? v.substring(1) : v;
     }
 
     if (variations) {

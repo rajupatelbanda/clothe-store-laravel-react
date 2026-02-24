@@ -33,6 +33,17 @@ app.get('/api/health', (req, res) => {
   res.status(200).json({ status: 'ok', uptime: process.uptime() });
 });
 
+// Static Folders
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/storage/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/storage', express.static(path.join(__dirname, 'uploads')));
+
+// Add support for Vercel temporary storage
+if (process.env.NODE_ENV === 'production') {
+  app.use('/tmp', express.static('/tmp'));
+  app.use('/storage/tmp', express.static('/tmp'));
+}
+
 // Import Routes
 const authRoutes = require('./routes/authRoutes');
 const productRoutes = require('./routes/productRoutes');

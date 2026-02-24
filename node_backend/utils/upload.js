@@ -1,9 +1,18 @@
 const multer = require('multer');
 const path = require('path');
+const fs = require('fs');
+
+// Ensure upload directory exists (for local development)
+const uploadDir = 'uploads/';
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
 
 const storage = multer.diskStorage({
   destination(req, file, cb) {
-    cb(null, 'uploads/');
+    // Vercel only allows writing to /tmp
+    const dest = process.env.NODE_ENV === 'production' ? '/tmp' : 'uploads/';
+    cb(null, dest);
   },
   filename(req, file, cb) {
     cb(
