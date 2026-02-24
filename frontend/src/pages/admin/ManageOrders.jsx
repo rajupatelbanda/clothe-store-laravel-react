@@ -168,15 +168,19 @@ const ManageOrders = () => {
                                             <tr className="small fw-bold"><th>Product</th><th>Spec</th><th>Price</th><th>Qty</th><th>Subtotal</th></tr>
                                         </thead>
                                         <tbody>
-                                            {selectedOrder.order_items?.map(item => (
-                                                <tr key={item.id}>
-                                                    <td className="fw-bold text-dark">{item.product?.name}</td>
-                                                    <td className="small text-muted">{item.size} / {item.color}</td>
-                                                    <td>₹{item.price}</td>
-                                                    <td>x{item.quantity}</td>
-                                                    <td className="fw-black text-primary">₹{(item.price * item.quantity).toFixed(2)}</td>
-                                                </tr>
-                                            ))}
+                                            {!selectedOrder.order_items || selectedOrder.order_items.length === 0 ? (
+                                                <tr><td colSpan="5" className="text-center py-4 fw-bold text-muted">No items found for this order</td></tr>
+                                            ) : (
+                                                selectedOrder.order_items.map(item => (
+                                                    <tr key={item.id}>
+                                                        <td className="fw-bold text-dark">{item.product?.name || 'Unknown Product'}</td>
+                                                        <td className="small text-muted">{item.size} / {item.color}</td>
+                                                        <td>₹{item.price}</td>
+                                                        <td>x{item.quantity}</td>
+                                                        <td className="fw-black text-primary">₹{(item.price * item.quantity).toFixed(2)}</td>
+                                                    </tr>
+                                                ))
+                                            )}
                                         </tbody>
                                     </table>
                                 </div>
