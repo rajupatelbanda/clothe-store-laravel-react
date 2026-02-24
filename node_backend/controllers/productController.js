@@ -155,7 +155,11 @@ const createProduct = asyncHandler(async (req, res) => {
     video = req.files['video'][0].path.replace(/\\/g, '/');
   }
 
-  const parsedVariations = variations ? JSON.parse(variations) : [];
+  const parsedVariations = variations ? JSON.parse(variations).map(v => ({
+    ...v,
+    price: Number(v.price),
+    stock: Number(v.stock)
+  })) : [];
 
   const product = new Product({
     name,
@@ -213,7 +217,11 @@ const updateProduct = asyncHandler(async (req, res) => {
     }
 
     if (variations) {
-      product.variations = JSON.parse(variations);
+      product.variations = JSON.parse(variations).map(v => ({
+        ...v,
+        price: Number(v.price),
+        stock: Number(v.stock)
+      }));
     }
 
     product.name = name || product.name;
