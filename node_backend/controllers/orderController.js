@@ -116,10 +116,21 @@ const getOrderById = asyncHandler(async (req, res) => {
 // @access  Private
 const getMyOrders = asyncHandler(async (req, res) => {
   const orders = await Order.find({ user: req.user._id }).sort({ createdAt: -1 });
-  const mappedOrders = orders.map(o => ({
-    ...o._doc,
-    id: o._id,
+  
+  const mappedOrders = await Promise.all(orders.map(async (o) => {
+    const items = await OrderItem.find({ order: o._id }).populate('product');
+    return {
+      ...o._doc,
+      id: o._id,
+      created_at: o.createdAt,
+      order_items: items.map(i => ({
+        ...i._doc,
+        id: i._id,
+        product: i.product ? { ...i.product._doc, id: i.product._id } : null,
+      }))
+    };
   }));
+  
   res.json(mappedOrders);
 });
 
@@ -177,10 +188,89 @@ const updateOrderStatus = asyncHandler(async (req, res) => {
   }
 });
 
+const PDFDocument = require('pdfkit');
+
+// @desc    Get order invoice
+// @route   GET /api/orders/:id/invoice
+// @access  Private
+const getInvoice = asyncHandler(async (req, res) => {
+  const order = await Order.findById(req.params.id).populate('user', 'name email');
+  const items = await OrderItem.find({ order: req.params.id }).populate('product');
+
+  if (!order) {
+    res.status(404);
+    throw new Error('Order not found');
+  }
+
+  const doc = new PDFDocument({ margin: 50 });
+  const filename = `Invoice_${order._id}.pdf`;
+
+  res.setHeader('Content-disposition', `attachment; filename="${filename}"`);
+  res.setHeader('Content-type', 'application/pdf');
+
+  doc.pipe(res);
+
+  // Header
+  doc.fontSize(25).text('GEMINI CLOTH STORE', { align: 'center' });
+  doc.fontSize(10).text('Premium Apparel Collection', { align: 'center' });
+  doc.moveDown();
+  doc.moveTo(50, doc.y).lineTo(550, doc.y).stroke();
+  doc.moveDown();
+
+  // Order Info
+  doc.fontSize(12).text(`INVOICE: #${order._id}`, { bold: true });
+  doc.text(`Date: ${new Date(order.createdAt).toLocaleDateString()}`);
+  doc.text(`Status: ${order.status.toUpperCase()}`);
+  doc.moveDown();
+
+  // Customer Info
+  doc.fontSize(14).text('Billed To:', { underline: true });
+  doc.fontSize(10).text(`Name: ${order.user?.name}`);
+  doc.text(`Email: ${order.user?.email}`);
+  doc.text(`Phone: ${order.phone}`);
+  doc.text(`Address: ${order.address}`);
+  doc.moveDown();
+
+  // Table Header
+  const tableTop = doc.y;
+  doc.fontSize(10).text('Product', 50, tableTop, { bold: true });
+  doc.text('Spec', 250, tableTop, { bold: true });
+  doc.text('Price', 350, tableTop, { bold: true });
+  doc.text('Qty', 450, tableTop, { bold: true });
+  doc.text('Total', 500, tableTop, { bold: true });
+  doc.moveDown();
+  doc.moveTo(50, doc.y).lineTo(550, doc.y).stroke();
+  doc.moveDown();
+
+  // Items
+  items.forEach((item, index) => {
+    const y = doc.y;
+    doc.text(item.product?.name || 'Item', 50, y);
+    doc.text(`${item.size} / ${item.color}`, 250, y);
+    doc.text(`₹${item.price}`, 350, y);
+    doc.text(`${item.quantity}`, 450, y);
+    doc.text(`₹${(item.price * item.quantity).toFixed(2)}`, 500, y);
+    doc.moveDown();
+  });
+
+  doc.moveDown();
+  doc.moveTo(50, doc.y).lineTo(550, doc.y).stroke();
+  doc.moveDown();
+
+  // Footer / Totals
+  const finalY = doc.y;
+  doc.fontSize(12).text('Summary:', 350, finalY, { bold: true });
+  doc.fontSize(10).text(`Shipping: ₹${order.shipping_charge}`, 350, finalY + 20);
+  doc.fontSize(14).text(`GRAND TOTAL: ₹${order.total}`, 350, finalY + 40, { bold: true });
+
+  doc.end();
+});
+
 module.exports = {
   addOrderItems,
   getOrderById,
   getMyOrders,
   getOrders,
   updateOrderStatus,
+  getInvoice,
 };
