@@ -95,7 +95,7 @@ const Navbar = () => {
                   <Link to="/cart" className="small fw-bold text-primary text-decoration-none">View All</Link>
                 </div>
                 <div className="cart-items-scroll overflow-auto" style={{maxHeight: '350px'}}>
-                  {cart.length === 0 ? (
+                  {!cart || cart.length === 0 ? (
                     <div className="text-center py-4 text-muted small fw-bold">Bag is empty</div>
                   ) : (
                     cart.map((item, idx) => (
