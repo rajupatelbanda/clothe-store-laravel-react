@@ -107,9 +107,13 @@ const Checkout = () => {
     };
 
     const placeOrder = async (method, paymentId, paymentStatus) => {
+        if (!cart || !Array.isArray(cart)) {
+            throw new Error("Cart is empty or invalid");
+        }
+        
         return await api.post('/orders', {
             items: cart.map(item => ({
-                product_id: item.id,
+                product_id: item.id || item._id,
                 quantity: item.quantity,
                 price: item.price,
                 color: item.color,
