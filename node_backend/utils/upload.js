@@ -2,10 +2,13 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
-// Ensure upload directory exists (for local development)
-const uploadDir = 'uploads/';
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
+// ONLY ensure upload directory exists for local development
+// Vercel filesystem is read-only at the root
+if (process.env.NODE_ENV !== 'production') {
+  const uploadDir = 'uploads/';
+  if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+  }
 }
 
 const storage = multer.diskStorage({
