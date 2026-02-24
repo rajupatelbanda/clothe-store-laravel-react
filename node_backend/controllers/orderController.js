@@ -138,12 +138,23 @@ const getMyOrders = asyncHandler(async (req, res) => {
 // @route   GET /api/admin/all-orders
 // @access  Private/Admin
 const getOrders = asyncHandler(async (req, res) => {
-  const orders = await Order.find({}).populate('user', 'id name').sort({ createdAt: -1 });
-  const mappedOrders = orders.map(o => ({
-    ...o._doc,
-    id: o._id,
-    user: o.user ? { ...o.user._doc, id: o.user._id } : null,
+  const orders = await Order.find({}).populate('user', 'id name email').sort({ createdAt: -1 });
+  
+  const mappedOrders = await Promise.all(orders.map(async (o) => {
+    const items = await OrderItem.find({ order: o._id }).populate('product');
+    return {
+      ...o._doc,
+      id: o._id,
+      user: o.user ? { ...o.user._doc, id: o.user._id } : null,
+      created_at: o.createdAt,
+      order_items: items.map(i => ({
+        ...i._doc,
+        id: i._id,
+        product: i.product ? { ...i.product._doc, id: i.product._id } : null,
+      }))
+    };
   }));
+  
   res.json(mappedOrders);
 });
 
