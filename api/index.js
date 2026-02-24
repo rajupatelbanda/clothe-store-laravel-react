@@ -1,28 +1,43 @@
+// api/index.js - Improved Diagnostic Version
 try {
+  console.log("Initializing API...");
+  console.log("Current working directory:", process.cwd());
+  
+  // Check if the backend entry file exists
+  const path = require('path');
+  const fs = require('fs');
+  const backendPath = path.join(process.cwd(), 'node_backend', 'index.js');
+  
+  if (!fs.existsSync(backendPath)) {
+    console.error("CRITICAL ERROR: node_backend/index.js not found at", backendPath);
+    throw new Error(`Backend entry file missing at ${backendPath}`);
+  }
+
   const app = require("../node_backend/index");
 
-  // Add a direct health check route to the exported app
+  // Health check route
   app.get("/api/health", (req, res) => {
     res.json({ 
       status: "ok", 
+      message: "Backend is operational",
       time: new Date().toISOString(),
-      node_env: process.env.NODE_ENV,
-      mongodb_ready: !!process.env.MONGODB_URI
+      env: process.env.NODE_ENV,
+      db_configured: !!process.env.MONGODB_URI
     });
   });
 
   module.exports = app;
 } catch (error) {
-  console.error("FATAL ERROR IN API ENTRY:", error);
+  console.error("FATAL INITIALIZATION ERROR:", error);
   
-  // Export a simple express app that shows the error if the main one fails
   const express = require('express');
   const errorApp = express();
   errorApp.all('*', (req, res) => {
     res.status(500).json({
-      error: "Express Application failed to initialize",
-      message: error.message,
-      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+      error: "Server Initialization Failed",
+      details: error.message,
+      hint: "Check Vercel logs for the full stack trace",
+      path_attempted: process.cwd()
     });
   });
   module.exports = errorApp;
