@@ -38,7 +38,9 @@ const Checkout = () => {
         const loadToast = toast.loading('Initiating secure payment...');
 
         try {
+            console.log("Initiating Razorpay Order for amount:", cartTotal);
             const { data: order } = await api.post('/razorpay/order', { amount: cartTotal });
+            console.log("Razorpay Order Created:", order);
 
             const options = {
                 key: "rzp_test_SIRA3SP2Y6SQbk", 
@@ -48,17 +50,23 @@ const Checkout = () => {
                 description: "Apparel Purchase",
                 order_id: order.id,
                 handler: async (response) => {
-                    const verifyRes = await api.post('/razorpay/verify', {
-                        razorpay_order_id: response.razorpay_order_id,
-                        razorpay_payment_id: response.razorpay_payment_id,
-                        razorpay_signature: response.razorpay_signature
-                    });
+                    console.log("Razorpay Response:", response);
+                    try {
+                        const verifyRes = await api.post('/razorpay/verify', {
+                            razorpay_order_id: response.razorpay_order_id,
+                            razorpay_payment_id: response.razorpay_payment_id,
+                            razorpay_signature: response.razorpay_signature
+                        });
 
-                    if (verifyRes.data.status === 'success') {
-                        await placeOrder('razorpay', response.razorpay_payment_id, 'paid');
-                        toast.success('Order placed successfully!', { id: loadToast });
-                        clearCart();
-                        navigate('/');
+                        if (verifyRes.data.status === 'success') {
+                            await placeOrder('razorpay', response.razorpay_payment_id, 'paid');
+                            toast.success('Order placed successfully!', { id: loadToast });
+                            clearCart();
+                            navigate('/');
+                        }
+                    } catch (err) {
+                        console.error("Verification failed:", err);
+                        toast.error('Payment verification failed', { id: loadToast });
                     }
                 },
                 prefill: {
@@ -70,11 +78,16 @@ const Checkout = () => {
             };
 
             const rzp = new window.Razorpay(options);
+            rzp.on('payment.failed', function (response){
+                console.error("Payment failed event:", response.error);
+                toast.error(response.error.description);
+            });
             rzp.open();
             setLoading(false);
             toast.dismiss(loadToast);
         } catch (error) {
-            toast.error('Payment initialization failed', { id: loadToast });
+            console.error("Razorpay Order Initiation Error:", error);
+            toast.error(error.response?.data?.message || 'Payment initialization failed', { id: loadToast });
             setLoading(false);
         }
     };
