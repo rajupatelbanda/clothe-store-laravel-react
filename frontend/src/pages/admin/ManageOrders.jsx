@@ -57,6 +57,26 @@ const ManageOrders = () => {
         return `badge rounded-pill px-3 py-2 ${map[status] || 'bg-secondary'}`;
     };
 
+    const [selectedOrder, setSelectedOrder] = useState(null);
+
+    const handleDownloadInvoice = async (orderId) => {
+        const loadToast = toast.loading('Preparing invoice...');
+        try {
+            const response = await api.get(`/orders/${orderId}/invoice`, {
+                responseType: 'blob'
+            });
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `Invoice_${orderId}.pdf`);
+            document.body.appendChild(link);
+            link.click();
+            toast.success('Invoice ready!', { id: loadToast });
+        } catch (error) {
+            toast.error('Failed to generate invoice', { id: loadToast });
+        }
+    };
+
     return (
         <AdminLayout title="Fulfillment Center">
             <div className="card shadow-2xl border-0 rounded-5 p-5 bg-white border-bottom border-primary border-4 border-opacity-10 mb-5 d-flex flex-row justify-content-between align-items-center">
@@ -74,7 +94,7 @@ const ManageOrders = () => {
                     <div className="table-responsive">
                         <table className="table align-middle">
                             <thead className="text-muted border-bottom text-uppercase small fw-black">
-                                <tr><th>Order #</th><th>Customer</th><th>Amount</th><th>Method</th><th>Status</th><th className="text-end">Update</th></tr>
+                                <tr><th>Order #</th><th>Customer</th><th>Amount</th><th>Method</th><th>Status</th><th className="text-end">Actions</th></tr>
                             </thead>
                             <tbody>
                                 {orders.map(order => (
@@ -86,26 +106,97 @@ const ManageOrders = () => {
                                                 <div><h6 className="fw-black mb-0 text-dark">{order.user?.name}</h6><small className="text-muted fw-bold">{order.phone}</small></div>
                                             </div>
                                         </td>
-                                        <td className="fw-black text-primary fs-5">${order.total}</td>
+                                        <td className="fw-black text-primary fs-5">₹{order.total}</td>
                                         <td><span className="badge bg-light text-dark border px-3 py-2 fw-bold text-uppercase">{order.payment_method}</span></td>
                                         <td><span className={getStatusBadge(order.status)}>{order.status}</span></td>
                                         <td className="text-end">
-                                            <select 
-                                                className="form-select form-select-sm rounded-pill fw-bold border-0 bg-light shadow-sm py-2 px-3 w-auto d-inline-block" 
-                                                value={order.status} 
-                                                onChange={(e) => handleStatusUpdate(order.id, e.target.value)}
-                                            >
-                                                <option value="pending">Pending</option>
-                                                <option value="processing">Processing</option>
-                                                <option value="shipped">Shipped</option>
-                                                <option value="delivered">Delivered</option>
-                                                <option value="cancelled">Cancelled</option>
-                                            </select>
+                                            <div className="d-flex gap-2 justify-content-end align-items-center">
+                                                <button className="btn btn-light rounded-circle p-2 shadow-sm text-primary" onClick={() => setSelectedOrder(order)} title="View Details"><i className="bi bi-eye-fill fs-5"></i></button>
+                                                <button className="btn btn-light rounded-circle p-2 shadow-sm text-danger" onClick={() => handleDownloadInvoice(order.id)} title="Download Invoice"><i className="bi bi-file-earmark-pdf-fill fs-5"></i></button>
+                                                <select 
+                                                    className="form-select form-select-sm rounded-pill fw-bold border-0 bg-light shadow-sm py-2 px-3 w-auto d-inline-block" 
+                                                    value={order.status} 
+                                                    onChange={(e) => handleStatusUpdate(order.id, e.target.value)}
+                                                >
+                                                    <option value="pending">Pending</option>
+                                                    <option value="processing">Processing</option>
+                                                    <option value="shipped">Shipped</option>
+                                                    <option value="delivered">Delivered</option>
+                                                    <option value="cancelled">Cancelled</option>
+                                                </select>
+                                            </div>
                                         </td>
                                     </tr>
                                 ))}
                             </tbody>
                         </table>
+                    </div>
+                </div>
+            )}
+
+            {/* Order Detail Modal */}
+            {selectedOrder && (
+                <div className="modal fade show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(5px)' }}>
+                    <div className="modal-dialog modal-lg modal-dialog-centered">
+                        <div className="modal-content border-0 rounded-5 shadow-2xl">
+                            <div className="modal-header border-0 p-4">
+                                <h5 className="modal-title fw-black">ORDER DETAILS #{selectedOrder.id}</h5>
+                                <button type="button" className="btn-close" onClick={() => setSelectedOrder(null)}></button>
+                            </div>
+                            <div className="modal-body p-4 pt-0">
+                                <div className="row g-4 mb-4">
+                                    <div className="col-md-6">
+                                        <div className="bg-light p-4 rounded-4 h-100">
+                                            <h6 className="fw-black text-muted small uppercase mb-3">Customer Information</h6>
+                                            <p className="mb-1 fw-bold text-dark">{selectedOrder.user?.name}</p>
+                                            <p className="mb-1 small text-muted">{selectedOrder.user?.email}</p>
+                                            <p className="mb-0 small text-muted">{selectedOrder.phone}</p>
+                                        </div>
+                                    </div>
+                                    <div className="col-md-6">
+                                        <div className="bg-light p-4 rounded-4 h-100">
+                                            <h6 className="fw-black text-muted small uppercase mb-3">Shipping Destination</h6>
+                                            <p className="mb-0 small fw-semibold text-dark">{selectedOrder.address}</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <h6 className="fw-black mb-3">Line Items</h6>
+                                <div className="table-responsive mb-4">
+                                    <table className="table align-middle border-light">
+                                        <thead className="bg-light">
+                                            <tr className="small fw-bold"><th>Product</th><th>Spec</th><th>Price</th><th>Qty</th><th>Subtotal</th></tr>
+                                        </thead>
+                                        <tbody>
+                                            {selectedOrder.order_items?.map(item => (
+                                                <tr key={item.id}>
+                                                    <td className="fw-bold text-dark">{item.product?.name}</td>
+                                                    <td className="small text-muted">{item.size} / {item.color}</td>
+                                                    <td>₹{item.price}</td>
+                                                    <td>x{item.quantity}</td>
+                                                    <td className="fw-black text-primary">₹{(item.price * item.quantity).toFixed(2)}</td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <div className="d-flex justify-content-between align-items-center bg-dark text-white p-4 rounded-4">
+                                    <div>
+                                        <span className="small opacity-50 fw-bold d-block">GRAND TOTAL</span>
+                                        <h3 className="fw-black mb-0">₹{selectedOrder.total}</h3>
+                                    </div>
+                                    <div className="text-end">
+                                        <span className="small opacity-50 fw-bold d-block">PAYMENT STATUS</span>
+                                        <span className="badge bg-primary rounded-pill uppercase fw-black">{selectedOrder.payment_status || 'Paid'}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="modal-footer border-0 p-4 pt-0">
+                                <button className="btn btn-outline-dark rounded-pill px-4 fw-bold" onClick={() => setSelectedOrder(null)}>CLOSE</button>
+                                <button className="btn btn-primary rounded-pill px-4 fw-black shadow-lg" onClick={() => handleDownloadInvoice(selectedOrder.id)}><i className="bi bi-file-earmark-pdf-fill me-2"></i>GET INVOICE</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             )}
