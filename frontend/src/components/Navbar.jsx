@@ -47,8 +47,8 @@ const Navbar = () => {
                     )}
                     <span className="text-white letter-spacing-tight small-caps">{settings?.site_name || 'Gemini Store'}</span>
                 </Link>
-                <button className="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                    <span className="navbar-toggler-icon"></span>
+                <button className="navbar-toggler border-0 shadow-none custom-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <i className="bi bi-list-nested fs-1 text-danger"></i>
                 </button>
                 <div className="collapse navbar-collapse" id="navbarNav">
                     <ul className="navbar-nav me-auto ms-lg-5">
@@ -143,6 +143,14 @@ const Navbar = () => {
             </div>
             <style>{`
                 .small-caps { font-variant: small-caps; }
+                .custom-toggler {
+                    background: #FFF0F3 !important;
+                    padding: 8px !important;
+                    border-radius: 12px !important;
+                    display: flex !important;
+                    align-items: center;
+                    justify-content: center;
+                }
                 .cart-dropdown-wrapper { position: relative; }
                 .cart-dropdown {
                     position: absolute;
