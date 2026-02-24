@@ -113,7 +113,7 @@ const ManageBrands = () => {
                                 <tbody>
                                     {brands.map(brand => (
                                         <tr key={brand.id} className="border-bottom">
-                                            <td className="py-3"><img src={brand.image?.startsWith('http') ? brand.image : (brand.image ? `http://localhost:8000/storage/${brand.image}` : 'https://ui-avatars.com/api/?name='+brand.name)} className="rounded-circle shadow-sm border border-light" width="50" height="50" style={{objectFit: 'cover'}} /></td>
+                                            <td className="py-3"><img src={brand.image?.startsWith('http') ? brand.image : (brand.image ? `${import.meta.env.VITE_STORAGE_URL}/${brand.image}` : 'https://ui-avatars.com/api/?name='+brand.name)} className="rounded-circle shadow-sm border border-light" width="50" height="50" style={{objectFit: 'cover'}} /></td>
                                             <td className="fw-black text-dark fs-5">{brand.name}</td>
                                             <td className="text-end">
                                                 <button className="btn btn-light rounded-circle p-2 me-2 shadow-sm text-primary" onClick={() => handleBrandEdit(brand)}><i className="bi bi-pencil-square fs-5"></i></button>

@@ -96,8 +96,7 @@ const OrderTracking = () => {
                                 <tr key={item.id}>
                                     <td>
                                         <div className="d-flex align-items-center gap-3">
-                                            <img src={item.product?.images?.[0]?.startsWith('http') ? item.product.images[0] : `http://localhost:8000/storage/${item.product?.images?.[0]}`} className="rounded-3 shadow-sm" width="50" height="50" style={{objectFit: 'cover'}} />
-                                            <span className="fw-bold">{item.product?.name}</span>
+                                                                                         <img src={item.product?.images?.[0]?.startsWith('http') ? item.product.images[0] : `${import.meta.env.VITE_STORAGE_URL}/${item.product?.images?.[0]}`} className="rounded-3 shadow-sm" width="50" height="50" style={{objectFit: 'cover'}} />                                            <span className="fw-bold">{item.product?.name}</span>
                                         </div>
                                     </td>
                                     <td className="small fw-bold text-muted">{item.size} / {item.color}</td>
