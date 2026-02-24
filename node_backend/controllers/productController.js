@@ -284,12 +284,15 @@ const getTrendingProducts = asyncHandler(async (req, res) => {
 // @access  Private/Admin
 const getLowStockProducts = asyncHandler(async (req, res) => {
   const products = await Product.find({ stock: { $lt: 10 } }).populate('category brand');
-  const mappedProducts = products.map(p => ({
-    ...p._doc,
-    id: p._id,
-    category: p.category ? { ...p.category._doc, id: p.category._id } : null,
-    brand: p.brand ? { ...p.brand._doc, id: p.brand._id } : null,
-  }));
+  const mappedProducts = products.map(p => {
+    const obj = p.toObject();
+    return {
+      ...obj,
+      id: p._id,
+      category: obj.category ? { ...obj.category, id: obj.category._id } : null,
+      brand: obj.brand ? { ...obj.brand, id: obj.brand._id } : null,
+    };
+  });
   res.json(mappedProducts);
 });
 
