@@ -98,13 +98,13 @@ const getOrderById = asyncHandler(async (req, res) => {
       ...order._doc,
       id: order._id,
       user: order.user ? { ...order.user._doc, id: order.user._id } : null,
+      order_items: items.map(i => ({
+        ...i._doc,
+        id: i._id,
+        product: i.product ? { ...i.product._doc, id: i.product._id } : null,
+      }))
     };
-    const mappedItems = items.map(i => ({
-      ...i._doc,
-      id: i._id,
-      product: i.product ? { ...i.product._doc, id: i.product._id } : null,
-    }));
-    res.json({ order: mappedOrder, items: mappedItems });
+    res.json(mappedOrder);
   } else {
     res.status(404);
     throw new Error('Order not found');
