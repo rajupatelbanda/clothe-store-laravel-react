@@ -8,36 +8,40 @@ const Product = require('../models/Product');
 // @access  Private
 const addOrderItems = asyncHandler(async (req, res) => {
   const {
-    orderItems,
-    shippingAddress,
-    paymentMethod,
-    itemsPrice,
-    taxPrice,
-    shippingPrice,
-    totalPrice,
+    items,
+    address,
+    payment_method,
+    shipping,
+    total,
     phone,
+    payment_id,
+    payment_status,
+    coupon_id,
   } = req.body;
 
-  if (orderItems && orderItems.length === 0) {
+  if (items && items.length === 0) {
     res.status(400);
     throw new Error('No order items');
   } else {
     const order = new Order({
       user: req.user._id,
-      address: shippingAddress,
-      payment_method: paymentMethod,
-      total: totalPrice,
+      address: address,
+      payment_method: payment_method,
+      total: total,
       phone,
-      shipping_charge: shippingPrice,
+      shipping_charge: shipping || 0,
+      payment_id: payment_id || null,
+      payment_status: payment_status || 'unpaid',
+      coupon: coupon_id || null,
     });
 
     const createdOrder = await order.save();
 
     const createdOrderItems = await Promise.all(
-      orderItems.map(async (item) => {
+      items.map(async (item) => {
         const orderItem = new OrderItem({
           order: createdOrder._id,
-          product: item.product,
+          product: item.product_id,
           quantity: item.quantity,
           price: item.price,
           color: item.color,
