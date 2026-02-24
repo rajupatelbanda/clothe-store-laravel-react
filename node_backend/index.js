@@ -62,7 +62,7 @@ app.use('/api', pageRoutes);
 app.use('/api', settingRoutes);
 app.use('/api', reviewRoutes);
 app.use('/api', couponRoutes);
-app.use('/api/razorpay', razorpayRoutes);
+app.use('/api', razorpayRoutes);
 app.use('/api', dashboardRoutes);
 app.use('/api', systemRoutes);
 
