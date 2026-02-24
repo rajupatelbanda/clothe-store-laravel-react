@@ -3,23 +3,29 @@ const mongoose = require('mongoose');
 let cachedConnection = null;
 
 const connectDB = async () => {
-  if (cachedConnection) {
+  if (cachedConnection && mongoose.connection.readyState === 1) {
     return cachedConnection;
   }
 
   const uri = process.env.MONGODB_URI;
   if (!uri) {
-    throw new Error('MONGODB_URI is not defined in environment variables');
+    console.error('MONGODB_URI is not defined');
+    return null;
   }
 
   try {
-    const conn = await mongoose.connect(uri);
+    // Add timeouts to prevent Vercel from hanging
+    const conn = await mongoose.connect(uri, {
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 45000,
+    });
     cachedConnection = conn;
     console.log(`MongoDB Connected: ${conn.connection.host}`);
     return conn;
   } catch (error) {
     console.error(`Database Connection Error: ${error.message}`);
-    throw error;
+    // Don't throw, let the middleware handle the null connection
+    return null;
   }
 };
 

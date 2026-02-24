@@ -1,7 +1,6 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
-const morgan = require('morgan');
 const path = require('path');
 const connectDB = require('./config/db');
 
@@ -10,42 +9,28 @@ dotenv.config();
 
 const app = express();
 
-// Database Connection Middleware for Serverless
-let isConnected = false;
-const connectDatabaseMiddleware = async (req, res, next) => {
-  if (isConnected) {
-    return next();
-  }
-  try {
-    await connectDB();
-    isConnected = true;
-    next();
-  } catch (error) {
-    console.error('Database connection failed:', error.message);
-    res.status(500).json({ error: 'Database connection failed', details: error.message });
-  }
-};
-
-// Apply connection middleware to all /api routes
-app.use('/api', connectDatabaseMiddleware);
-
 // Middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-if (process.env.NODE_ENV !== 'production') {
-  app.use(morgan('dev'));
-}
-
-// Static Folders
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-app.use('/storage/uploads', express.static(path.join(__dirname, 'uploads')));
-app.use('/storage', express.static(path.join(__dirname, 'uploads')));
+// Database Connection Middleware
+app.use(async (req, res, next) => {
+  // Only connect if we're hitting an API route
+  if (req.path.startsWith('/api')) {
+    await connectDB();
+  }
+  next();
+});
 
 // Root Route
 app.get('/', (req, res) => {
   res.send('API is running...');
+});
+
+// Health check (Fastest possible response)
+app.get('/api/health', (req, res) => {
+  res.status(200).json({ status: 'ok', uptime: process.uptime() });
 });
 
 // Import Routes
@@ -89,8 +74,6 @@ app.use('/api', systemRoutes);
 // Error Handling
 app.use((err, req, res, next) => {
   const statusCode = res.statusCode === 200 ? 500 : res.statusCode;
-  console.error(`[${new Date().toISOString()}] ${req.method} ${req.url} - ${statusCode}: ${err.message}`);
-  
   res.status(statusCode).json({
     message: err.message,
     stack: process.env.NODE_ENV === 'production' ? null : err.stack,
@@ -98,11 +81,8 @@ app.use((err, req, res, next) => {
 });
 
 const PORT = process.env.PORT || 8000;
-
 if (process.env.NODE_ENV !== 'production' && require.main === module) {
-  app.listen(PORT, () => {
-    console.log(`Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
-  });
+  app.listen(PORT, () => console.log(`Server on port ${PORT}`));
 }
 
 module.exports = app;
