@@ -34,7 +34,7 @@ const Cart = () => {
             <PageBanner page="cart" title="Shopping Bag" />
             <div className="container py-4">
             <h2 className="mb-5 fw-black text-dark letter-spacing-tight">Your Shopping <span className="text-primary">Bag</span></h2>
-            {cart.length === 0 ? (
+            {!cart || cart.length === 0 ? (
                 <div className="card shadow-2xl border-0 rounded-5 p-5 text-center bg-white">
                     <i className="bi bi-bag-x fs-1 text-muted mb-3 d-block opacity-25"></i>
                     <h3 className="fw-black text-dark">Your bag is empty</h3>
@@ -62,7 +62,7 @@ const Cart = () => {
                                                 <td className="py-4">
                                                     <div className="d-flex align-items-center">
                                                         <img 
-                                                            src={item.images && item.images[0] ? (item.images[0].startsWith('http') ? item.images[0] : `http://localhost:8000/storage/${item.images[0]}`) : 'https://via.placeholder.com/100'} 
+                                                            src={item.images && item.images[0] ? (item.images[0].startsWith('http') ? item.images[0] : `${import.meta.env.VITE_STORAGE_URL}/${item.images[0]}`) : 'https://via.placeholder.com/100'} 
                                                             className="img-fluid rounded-4 shadow-sm me-3 object-fit-cover" 
                                                             style={{ width: '80px', height: '80px' }}
                                                             alt={item.name}
