@@ -7,7 +7,12 @@ const path = require('path');
 // @access  Private/Admin
 const getLogs = asyncHandler(async (req, res) => {
   const logDir = path.join(__dirname, '../logs');
+  
+  // Only try to create/read logs if not in production or if directory actually exists
   if (!fs.existsSync(logDir)) {
+    if (process.env.NODE_ENV === 'production') {
+      return res.json([]); // Return empty logs on Vercel safely
+    }
     fs.mkdirSync(logDir);
   }
 
