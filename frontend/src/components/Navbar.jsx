@@ -41,7 +41,7 @@ const Navbar = () => {
         <div className="d-flex align-items-center justify-content-between w-100 d-lg-none mb-2">
           <Link className="navbar-brand fw-black fs-3 d-flex align-items-center m-0" to="/">
             {settings?.logo ? (
-              <img src={`${import.meta.env.VITE_STORAGE_URL}/${settings.logo}`} alt="logo" height="40" className="me-2 rounded shadow-sm border border-white" />
+              <img src={`/storage/${settings.logo}`} alt="logo" height="40" className="me-2 rounded shadow-sm border border-white" />
             ) : (
               <div className="bg-white text-danger p-1 rounded-3 me-2 shadow-sm d-flex align-items-center justify-content-center" style={{ width: '35px', height: '35px' }}>
                 <i className="bi bi-bag-heart-fill fs-5"></i>
@@ -57,9 +57,9 @@ const Navbar = () => {
         {/* Desktop View: Brand */}
         <Link className="navbar-brand fw-black fs-2 d-none d-lg-flex align-items-center animate-left" to="/">
           {settings?.logo ? (
-            <img src={`${import.meta.env.VITE_STORAGE_URL}/${settings.logo}`} alt="logo" height="60" className="me-3 rounded shadow-sm border border-white" />
+            <img src={`/storage/${settings.logo}`} alt="logo" height="60" className="me-3 rounded shadow-sm border border-white" />
           ) : (
-            <div className="bg-white text-danger p-2 rounded-4 me-3 shadow-sm border border-white d-flex align-items-center justify-content-center" style={{ width: '50px', height: '50px' }}>
+            <div className="bg-white text-danger p-2 rounded-4 me-3 shadow-sm border border-white d-flex align-items-center justify-content-center" style={{ width: "50px", height: "50px" }}>
               <i className="bi bi-bag-heart-fill fs-3"></i>
             </div>
           )}
@@ -100,7 +100,7 @@ const Navbar = () => {
                   ) : (
                     cart.map((item, idx) => (
                       <div key={`${item.id}-${idx}`} className="d-flex gap-3 mb-3 align-items-center border-bottom border-light pb-3 position-relative group">
-                        <img src={item.images?.[0]?.startsWith('http') ? item.images[0] : `${import.meta.env.VITE_STORAGE_URL}/${item.images?.[0]}`} alt={item.name} className="rounded-3 shadow-sm border" style={{width: '50px', height: '50px', objectFit: 'cover'}} />
+                        <img src={item.images?.[0]?.startsWith('http') ? item.images[0] : `/storage/${item.images?.[0]}`} alt={item.name} className="rounded-3 shadow-sm border" style={{width: '50px', height: '50px', objectFit: 'cover'}} />
                         <div className="flex-grow-1 overflow-hidden pe-3 text-start">
                           <h6 className="fw-bold mb-0 text-truncate small text-dark">{item.name}</h6>
                           <div className="d-flex gap-2 small opacity-75 fw-bold" style={{fontSize: '0.7rem'}}>

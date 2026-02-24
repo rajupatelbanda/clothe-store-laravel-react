@@ -147,16 +147,12 @@ const createProduct = asyncHandler(async (req, res) => {
   // Handle Files
   let images = [];
   if (req.files && req.files['images[]']) {
-    images = req.files['images[]'].map(file => {
-      let p = file.path.replace(/\\/g, '/');
-      return p.startsWith('/tmp/') ? p.substring(1) : p;
-    });
+    images = req.files['images[]'].map(file => file.path);
   }
 
   let video = '';
   if (req.files && req.files['video']) {
-    video = req.files['video'][0].path.replace(/\\/g, '/');
-    if (video.startsWith('/tmp/')) video = video.substring(1);
+    video = req.files['video'][0].path;
   }
 
   const parsedVariations = variations ? JSON.parse(variations).map(v => ({
@@ -212,16 +208,13 @@ const updateProduct = asyncHandler(async (req, res) => {
   if (product) {
     // Handle Files
     if (req.files && req.files['images[]']) {
-      const newImages = req.files['images[]'].map(file => {
-        let p = file.path.replace(/\\/g, '/');
-        return p.startsWith('/tmp/') ? p.substring(1) : p;
-      });
+      const newImages = req.files['images[]'].map(file => file.path);
       product.images = newImages; 
     }
 
     if (req.files && req.files['video']) {
-      let v = req.files['video'][0].path.replace(/\\/g, '/');
-      product.video = v.startsWith('/tmp/') ? v.substring(1) : v;
+      let v = req.files['video'][0].path;
+      product.video = v;
     }
 
     if (variations) {

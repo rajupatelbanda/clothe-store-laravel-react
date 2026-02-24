@@ -63,7 +63,7 @@ const StockManagement = () => {
                                     products.map(p => (
                                         <tr key={p.id} className="border-bottom">
                                             <td className="py-4"><div className="d-flex align-items-center gap-3">
-                                                <img src={p.images?.[0]?.startsWith('http') ? p.images[0] : (p.images?.[0] ? `${import.meta.env.VITE_STORAGE_URL}/${p.images[0]}` : 'https://via.placeholder.com/60')} className="rounded-4 shadow-sm border border-light" width="60" height="60" style={{objectFit:'cover'}} />
+                                                <img src={p.images?.[0]?.startsWith('http') ? p.images[0] : (p.images?.[0] ? `/storage/${p.images[0]}` : 'https://via.placeholder.com/60')} className="rounded-4 shadow-sm border border-light" width="60" height="60" style={{objectFit:'cover'}} />
                                                 <div><h6 className="fw-black mb-0 text-dark">{p.name}</h6><small className="text-muted fw-bold">{p.brand?.name}</small></div>
                                             </div></td>
                                             <td><span className="badge bg-light text-dark border px-2 py-1 small fw-bold text-uppercase">{p.category?.name}</span></td>

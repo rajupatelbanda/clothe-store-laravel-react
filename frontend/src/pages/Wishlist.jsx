@@ -36,7 +36,7 @@ const Wishlist = () => {
                                         </button>
                                         <div className="position-relative overflow-hidden rounded-3" style={{ height: '240px' }}>
                                             <img 
-                                                src={product.images && product.images.length > 0 ? (product.images[0].startsWith('http') ? product.images[0] : `${import.meta.env.VITE_STORAGE_URL}/${product.images[0]}`) : `https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=1000`} 
+                                                src={product.images && product.images.length > 0 ? (product.images[0].startsWith('http') ? product.images[0] : `/storage/${product.images[0]}`) : `https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=1000`} 
                                                 className="card-img-top w-100 h-100 object-fit-cover transition-all" 
                                                 alt={product.name} 
                                             />

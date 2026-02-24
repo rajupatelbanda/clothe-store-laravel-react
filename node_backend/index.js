@@ -9,12 +9,6 @@ dotenv.config();
 
 const app = express();
 
-// Vercel Temporary Storage Support (MUST BE AT THE TOP)
-if (process.env.VERCEL || process.env.NODE_ENV === 'production') {
-  app.use('/storage/tmp', express.static('/tmp'));
-  app.use('/tmp', express.static('/tmp'));
-}
-
 // Middleware
 app.use(cors());
 app.use(express.json());
@@ -23,15 +17,11 @@ app.use(express.urlencoded({ extended: true }));
 // Database Connection Middleware
 app.use(async (req, res, next) => {
   // Only connect if we're hitting an API route
-  if (req.path.startsWith('/api')) {
+  // Or if it's the health check after it's passed the initial stage
+  if (req.path.startsWith('/api') || req.path === '/') {
     await connectDB();
   }
   next();
-});
-
-// Root Route
-app.get('/', (req, res) => {
-  res.send('API is running...');
 });
 
 // Health check (Fastest possible response)
@@ -40,14 +30,13 @@ app.get('/api/health', (req, res) => {
     status: 'ok', 
     uptime: process.uptime(),
     node_env: process.env.NODE_ENV,
-    is_vercel: !!process.env.VERCEL
+    is_vercel: !!process.env.VERCEL,
+    static_path_served_from: process.env.VERCEL ? '/tmp/uploads' : 'uploads'
   });
 });
 
-// Static Folders (Local)
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-app.use('/storage/uploads', express.static(path.join(__dirname, 'uploads')));
-app.use('/storage', express.static(path.join(__dirname, 'uploads')));
+
+
 
 // Import Routes
 const authRoutes = require('./routes/authRoutes');

@@ -7,8 +7,7 @@ router.post('/', upload.single('image'), (req, res) => {
     res.status(400);
     throw new Error('No file uploaded');
   }
-  const path = req.file.path.replace(/\\/g, '/');
-  res.send(`/${path}`);
+  res.send(req.file.path);
 });
 
 module.exports = router;
