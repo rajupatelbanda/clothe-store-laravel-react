@@ -168,8 +168,12 @@ const Home = () => {
                         <div className="col-md-4 col-lg-2" key={cat.id}>
                             <Link to={`/shop/${cat.slug}`} className="text-decoration-none group">
                                 <div className="card h-100 border-0 p-4 text-center bg-white shadow-soft transition-all hover-bg-primary">
-                                    <div className="icon-box mb-3 mx-auto rounded-circle d-flex align-items-center justify-content-center bg-light" style={{width: '60px', height: '60px'}}>
-                                        <i className="bi bi-layers-fill fs-4 text-primary"></i>
+                                    <div className="icon-box mb-3 mx-auto rounded-circle d-flex align-items-center justify-content-center bg-light overflow-hidden" style={{width: '60px', height: '60px'}}>
+                                        <img 
+                                            src={cat.image?.startsWith('http') ? cat.image : (cat.image ? `${import.meta.env.VITE_STORAGE_URL}/${cat.image}` : 'https://via.placeholder.com/60')} 
+                                            alt={cat.name}
+                                            className="w-100 h-100 object-fit-cover"
+                                        />
                                     </div>
                                     <h6 className="mb-0 text-dark fw-black small text-uppercase tracking-widest">{cat.name}</h6>
                                 </div>
