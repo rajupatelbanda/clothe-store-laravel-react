@@ -48,7 +48,11 @@ const getBanners = asyncHandler(async (req, res) => {
 // @access  Private/Admin
 const createBanner = asyncHandler(async (req, res) => {
   const { title, url, page } = req.body;
-  const image = req.file ? req.file.path.replace(/\\/g, '/') : req.body.image;
+  let image = req.file ? req.file.path.replace(/\\/g, '/') : req.body.image;
+
+  if (image && image.startsWith('/tmp/')) {
+    image = image.substring(1);
+  }
 
   const banner = await Banner.create({
     title,
@@ -65,7 +69,11 @@ const createBanner = asyncHandler(async (req, res) => {
 // @access  Private/Admin
 const updateBanner = asyncHandler(async (req, res) => {
   const { title, url, page, is_active } = req.body;
-  const image = req.file ? req.file.path.replace(/\\/g, '/') : req.body.image;
+  let image = req.file ? req.file.path.replace(/\\/g, '/') : req.body.image;
+
+  if (image && image.startsWith('/tmp/')) {
+    image = image.substring(1);
+  }
 
   const banner = await Banner.findById(req.params.id);
 

@@ -33,7 +33,12 @@ const getCategoryBySlug = asyncHandler(async (req, res) => {
 // @access  Private/Admin
 const createCategory = asyncHandler(async (req, res) => {
   const { name } = req.body;
-  const image = req.file ? req.file.path.replace(/\\/g, '/') : req.body.image;
+  let image = req.file ? req.file.path.replace(/\\/g, '/') : req.body.image;
+  
+  // Normalize Vercel tmp path
+  if (image && image.startsWith('/tmp/')) {
+    image = image.substring(1); // change /tmp/... to tmp/...
+  }
 
   const categoryExists = await Category.findOne({ name });
 
@@ -56,7 +61,12 @@ const createCategory = asyncHandler(async (req, res) => {
 // @access  Private/Admin
 const updateCategory = asyncHandler(async (req, res) => {
   const { name } = req.body;
-  const image = req.file ? req.file.path.replace(/\\/g, '/') : req.body.image;
+  let image = req.file ? req.file.path.replace(/\\/g, '/') : req.body.image;
+
+  // Normalize Vercel tmp path
+  if (image && image.startsWith('/tmp/')) {
+    image = image.substring(1);
+  }
 
   const category = await Category.findById(req.params.id);
 
