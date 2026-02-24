@@ -15,7 +15,8 @@ const getBanners = asyncHandler(async (req, res) => {
     delete query.is_active;
   }
 
-  if (req.query.page && !req.query.admin) {
+  // Handle page-specific filtering correctly
+  if (req.query.page && req.query.page !== 'undefined' && !req.query.admin) {
     query.page = req.query.page;
   }
 
@@ -25,11 +26,14 @@ const getBanners = asyncHandler(async (req, res) => {
     .limit(pageSize)
     .skip(pageSize * (page - 1));
 
-  const mappedBanners = banners.map(b => ({
-    ...b._doc,
-    id: b._id,
-    status: b.is_active, // Match Laravel 'status' field if needed
-  }));
+  const mappedBanners = banners.map(b => {
+    const obj = b.toObject();
+    return {
+      ...obj,
+      id: b._id,
+      status: obj.is_active,
+    };
+  });
 
   if (req.query.admin) {
       res.json({
@@ -47,7 +51,7 @@ const getBanners = asyncHandler(async (req, res) => {
 // @route   POST /api/admin/banners
 // @access  Private/Admin
 const createBanner = asyncHandler(async (req, res) => {
-  const { title, url, page } = req.body;
+  const { title, url, page, status } = req.body;
   let image = req.file ? req.file.path.replace(/\\/g, '/') : req.body.image;
 
   if (image && image.startsWith('/tmp/')) {
@@ -59,6 +63,7 @@ const createBanner = asyncHandler(async (req, res) => {
     image,
     url,
     page,
+    is_active: status === '1' || status === true || status === 'true',
   });
 
   res.status(201).json(banner);
@@ -68,7 +73,7 @@ const createBanner = asyncHandler(async (req, res) => {
 // @route   PUT /api/admin/banners/:id
 // @access  Private/Admin
 const updateBanner = asyncHandler(async (req, res) => {
-  const { title, url, page, is_active } = req.body;
+  const { title, url, page, is_active, status } = req.body;
   let image = req.file ? req.file.path.replace(/\\/g, '/') : req.body.image;
 
   if (image && image.startsWith('/tmp/')) {
@@ -82,7 +87,12 @@ const updateBanner = asyncHandler(async (req, res) => {
     banner.image = image || banner.image;
     banner.url = url || banner.url;
     banner.page = page || banner.page;
-    banner.is_active = is_active !== undefined ? is_active : banner.is_active;
+    
+    if (status !== undefined) {
+      banner.is_active = status === '1' || status === true || status === 'true';
+    } else if (is_active !== undefined) {
+      banner.is_active = is_active === '1' || is_active === true || is_active === 'true';
+    }
 
     const updatedBanner = await banner.save();
     res.json(updatedBanner);
