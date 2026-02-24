@@ -17,7 +17,7 @@ const getLogs = asyncHandler(async (req, res) => {
     return {
       name: file,
       size: (stats.size / 1024).toFixed(2) + ' KB',
-      last_modified: stats.mtime.toLocaleString(),
+      last_modified: stats.mtime.toLocaleString('en-US'),
     };
   });
 

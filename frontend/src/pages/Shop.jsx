@@ -220,10 +220,37 @@ const Shop = () => {
 
                             {/* Pagination */}
                             {totalPages > 1 && (
-                                <div className="d-flex justify-content-center mt-5 gap-2">
-                                    {[...Array(totalPages)].map((_, i) => (
-                                        <button key={i} className={`btn btn-sm rounded-3 fw-bold ${currentPage === i+1 ? 'btn-primary shadow-sm' : 'btn-light'}`} style={{width: '40px', height: '40px'}} onClick={() => {setCurrentPage(i+1); window.scrollTo(0,0);}}>{i+1}</button>
-                                    ))}
+                                <div className="d-flex justify-content-center mt-5 gap-3">
+                                    <button 
+                                        className="btn btn-light rounded-circle shadow-sm fw-black" 
+                                        disabled={currentPage === 1}
+                                        onClick={() => {setCurrentPage(prev => prev - 1); window.scrollTo(0,0);}}
+                                        style={{width: '45px', height: '45px', display: 'flex', alignItems: 'center', justifyContent: 'center'}}
+                                    >
+                                        <i className="bi bi-chevron-left"></i>
+                                    </button>
+                                    
+                                    <div className="d-flex gap-2">
+                                        {[...Array(totalPages)].map((_, i) => (
+                                            <button 
+                                                key={i} 
+                                                className={`btn rounded-3 fw-black transition-all ${currentPage === i+1 ? 'btn-primary shadow-lg scale-110' : 'btn-white border hover-bg-light'}`} 
+                                                style={{width: '45px', height: '45px', fontSize: '0.9rem'}} 
+                                                onClick={() => {setCurrentPage(i+1); window.scrollTo(0,0);}}
+                                            >
+                                                {i+1}
+                                            </button>
+                                        ))}
+                                    </div>
+
+                                    <button 
+                                        className="btn btn-light rounded-circle shadow-sm fw-black" 
+                                        disabled={currentPage === totalPages}
+                                        onClick={() => {setCurrentPage(prev => prev + 1); window.scrollTo(0,0);}}
+                                        style={{width: '45px', height: '45px', display: 'flex', alignItems: 'center', justifyContent: 'center'}}
+                                    >
+                                        <i className="bi bi-chevron-right"></i>
+                                    </button>
                                 </div>
                             )}
                         </>
@@ -237,10 +264,13 @@ const Shop = () => {
                 </div>
             </div>
             <style>{`
-                .product-card { transition: transform 0.3s; }
-                .product-card:hover { transform: translateY(-5px); }
+                .product-card { transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+                .product-card:hover { transform: translateY(-10px); }
                 .cursor-pointer { cursor: pointer; }
                 .form-check-input:checked { background-color: var(--primary); border-color: var(--primary); }
+                .transition-all { transition: all 0.3s ease; }
+                .scale-110 { transform: scale(1.1); }
+                .hover-bg-light:hover { background: #f8f9fa; }
             `}</style>
             </div>
         </div>
