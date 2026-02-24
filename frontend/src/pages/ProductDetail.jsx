@@ -90,7 +90,7 @@ const ProductDetail = () => {
         }, [selectedSize, selectedColor, product]);
     const handleAddToCart = () => {
         if (activeStock <= 0) return toast.error('Out of stock');
-        addToCart(product, selectedColor, selectedSize, quantity);
+        addToCart(product, selectedColor, selectedSize, quantity, parseFloat(displayPrice));
         toast.success('Added to your bag');
     };
 

@@ -22,14 +22,17 @@ export const CartProvider = ({ children }) => {
         }
     }, [cart]);
 
-    const addToCart = (product, color, size, quantity = 1) => {
+    const addToCart = (product, color, size, quantity = 1, price = null) => {
+        const itemPrice = price !== null ? price : (product.discount_price || product.price);
         const existingItemIndex = cart.findIndex(item => item.id === product.id && item.color === color && item.size === size);
         if (existingItemIndex > -1) {
             const newCart = [...cart];
             newCart[existingItemIndex].quantity += quantity;
+            // Update price if it changed (optional, but good for consistency)
+            newCart[existingItemIndex].price = itemPrice;
             setCart(newCart);
         } else {
-            setCart([...cart, { ...product, color, size, quantity }]);
+            setCart([...cart, { ...product, color, size, quantity, price: itemPrice }]);
         }
     };
 
