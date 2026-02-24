@@ -52,7 +52,7 @@ const Home = () => {
                 </button>
                                 <div className="img-container position-relative" style={{ height: '320px', background: '#f8f8f8', overflow: 'hidden' }}>
                                     <img
-                                        src={product.images && product.images[0] ? (product.images[0].startsWith('http') ? product.images[0] : `/storage/${product.images[0]}`) : `https://images.unsplash.com/photo-1512436991641-6745cdb1723f?q=80&w=1000`}
+                                        src={product.images && product.images[0] ? (product.images[0].startsWith('http') ? product.images[0] : `${import.meta.env.VITE_STORAGE_URL}/${product.images[0]}`) : `https://images.unsplash.com/photo-1512436991641-6745cdb1723f?q=80&w=1000`}
                                         className="w-100 h-100 object-fit-cover transition-all image-zoom"
                                         alt={product.name}
                                     />                    {badge && <span className="position-absolute top-0 start-0 m-3 badge bg-dark rounded-pill px-3 py-2 fw-black shadow-lg" style={{zIndex: 2}}>{badge}</span>}
@@ -81,7 +81,7 @@ const Home = () => {
                             {banners.map((banner, index) => (
                                 <div className={`carousel-item ${index === 0 ? 'active' : ''}`} key={banner.id}>
                                     <div className="position-relative" style={{ height: '75vh' }}>
-                                        <img src={banner.image.startsWith('http') ? banner.image : `/storage/${banner.image}`} className="d-block w-100 h-100 object-fit-cover" alt={banner.title} />
+                                        <img src={banner.image.startsWith('http') ? banner.image : `${import.meta.env.VITE_STORAGE_URL}/${banner.image}`} className="d-block w-100 h-100 object-fit-cover" alt={banner.title} />
                                         <div className="container h-100 d-flex align-items-center">
                                             <div className="col-lg-6 text-white p-5 animate-left" style={{background:'rgba(0,0,0,0.3)', backdropFilter:'blur(10px)', borderRadius:'30px', border:'1px solid rgba(255,255,255,0.1)'}}>
                                                 <span className="badge bg-primary px-3 py-2 rounded-pill mb-3 fw-black tracking-widest">NEW ARRIVAL</span>

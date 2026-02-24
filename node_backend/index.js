@@ -21,7 +21,8 @@ app.use(morgan('dev'));
 
 // Static Folders
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-app.use('/storage', express.static(path.join(__dirname, 'uploads'))); // Also serve from /storage for compatibility with frontend
+app.use('/storage/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/storage', express.static(path.join(__dirname, 'uploads'))); // Maintain /storage/ for files WITHOUT uploads prefix
 
 // Root Route
 app.get('/', (req, res) => {

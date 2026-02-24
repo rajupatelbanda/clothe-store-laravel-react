@@ -168,7 +168,7 @@ const ManageCategories = () => {
                                     {categories.map(cat => (
                                         <tr key={cat.id} className="border-bottom">
                                             <td className="py-4">
-                                                <img src={cat.image?.startsWith('http') ? cat.image : (cat.image ? `http://localhost:8000/storage/${cat.image}` : 'https://via.placeholder.com/50')} className="rounded-circle shadow-sm border border-light" width="50" height="50" style={{objectFit: 'cover'}} />
+                                                <img src={cat.image?.startsWith('http') ? cat.image : (cat.image ? `${import.meta.env.VITE_STORAGE_URL}/${cat.image}` : 'https://via.placeholder.com/50')} className="rounded-circle shadow-sm border border-light" width="50" height="50" style={{objectFit: 'cover'}} />
                                             </td>
                                             <td className="fw-black text-dark fs-5">{cat.name}</td>
                                             <td>

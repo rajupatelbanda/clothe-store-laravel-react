@@ -69,14 +69,14 @@ const Settings = () => {
                                 <div className="col-12">
                                     <label className="form-label fw-bold small text-muted">PRIMARY LOGO</label>
                                     <div className="d-flex align-items-center gap-4 bg-light p-3 rounded-4">
-                                        <img src={currentLogo ? `http://localhost:8000/storage/${currentLogo}` : 'https://via.placeholder.com/100x40'} style={{maxHeight:'40px'}} className="rounded" />
+                                        <img src={currentLogo ? `${import.meta.env.VITE_STORAGE_URL}/${currentLogo}` : 'https://via.placeholder.com/100x40'} style={{maxHeight:'40px'}} className="rounded" />
                                         <input type="file" className="form-control form-control-sm border-0 bg-transparent shadow-none" onChange={(e)=>setLogo(e.target.files[0])} accept="image/*" />
                                     </div>
                                 </div>
                                 <div className="col-12">
                                     <label className="form-label fw-bold small text-muted">FAVICON (16x16 / 32x32)</label>
                                     <div className="d-flex align-items-center gap-4 bg-light p-3 rounded-4">
-                                        <img src={currentFavicon ? `http://localhost:8000/storage/${currentFavicon}` : 'https://via.placeholder.com/32'} style={{width:'32px', height:'32px'}} className="rounded shadow-sm" />
+                                        <img src={currentFavicon ? `${import.meta.env.VITE_STORAGE_URL}/${currentFavicon}` : 'https://via.placeholder.com/32'} style={{width:'32px', height:'32px'}} className="rounded shadow-sm" />
                                         <input type="file" className="form-control form-control-sm border-0 bg-transparent shadow-none" onChange={(e)=>setFavicon(e.target.files[0])} accept="image/*" />
                                     </div>
                                 </div>

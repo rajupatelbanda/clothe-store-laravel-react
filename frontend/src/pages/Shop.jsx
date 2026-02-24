@@ -199,7 +199,7 @@ const Shop = () => {
                                                 </button>
                                                                                                 <Link to={`/product/${product.slug}`}>
                                                                                                     <img
-                                                                                                        src={product.images && product.images[0] ? (product.images[0].startsWith('http') ? product.images[0] : `/storage/${product.images[0]}`) : `https://images.unsplash.com/photo-1512436991641-6745cdb1723f?q=80&w=1000`}  
+                                                                                                        src={product.images && product.images[0] ? (product.images[0].startsWith('http') ? product.images[0] : `${import.meta.env.VITE_STORAGE_URL}/${product.images[0]}`) : `https://images.unsplash.com/photo-1512436991641-6745cdb1723f?q=80&w=1000`}  
                                                                                                         className="w-100 h-100 object-fit-cover transition-all"
                                                                                                         alt={product.name}
                                                                                                     />

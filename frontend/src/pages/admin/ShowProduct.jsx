@@ -31,7 +31,7 @@ const ShowProduct = () => {
                 <div className="col-lg-4">
                     <div className="card shadow-soft border-0 rounded-5 overflow-hidden mb-4">
                         <img 
-                            src={product.images && product.images[0] ? (product.images[0].startsWith('http') ? product.images[0] : `http://localhost:8000/storage/${product.images[0]}`) : 'https://via.placeholder.com/400'} 
+                            src={product.images && product.images[0] ? (product.images[0].startsWith('http') ? product.images[0] : `${import.meta.env.VITE_STORAGE_URL}/${product.images[0]}`) : 'https://via.placeholder.com/400'} 
                             className="img-fluid" 
                             alt={product.name}
                         />
@@ -40,7 +40,7 @@ const ShowProduct = () => {
                         <div className="row g-2">
                             {product.images.slice(1).map((img, i) => (
                                 <div className="col-4" key={i}>
-                                    <img src={img.startsWith('http') ? img : `http://localhost:8000/storage/${img}`} className="img-fluid rounded-3 shadow-sm" alt="" />
+                                    <img src={img.startsWith('http') ? img : `${import.meta.env.VITE_STORAGE_URL}/${img}`} className="img-fluid rounded-3 shadow-sm" alt="" />
                                 </div>
                             ))}
                         </div>
@@ -49,7 +49,7 @@ const ShowProduct = () => {
                         <div className="mt-4">
                             <h6 className="fw-black mb-3">Product Video</h6>
                             <video controls className="w-100 rounded-4 shadow-sm">
-                                <source src={`http://localhost:8000/storage/${product.video}`} type="video/mp4" />
+                                <source src={`${import.meta.env.VITE_STORAGE_URL}/${product.video}`} type="video/mp4" />
                             </video>
                         </div>
                     )}
