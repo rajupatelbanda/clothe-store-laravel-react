@@ -133,30 +133,47 @@ const createProduct = asyncHandler(async (req, res) => {
     name,
     price,
     description,
-    image,
-    brand,
-    category,
-    subcategory,
+    brand_id,
+    category_id,
+    subcategory_id,
     stock,
-    colors,
-    sizes,
+    is_featured,
+    is_trending,
+    status,
     discount_price,
+    variations
   } = req.body;
+
+  // Handle Files
+  let images = [];
+  if (req.files && req.files['images[]']) {
+    images = req.files['images[]'].map(file => file.path.replace(/\\/g, '/'));
+  }
+
+  let video = '';
+  if (req.files && req.files['video']) {
+    video = req.files['video'][0].path.replace(/\\/g, '/');
+  }
+
+  const parsedVariations = variations ? JSON.parse(variations) : [];
 
   const product = new Product({
     name,
-    price,
-    user: req.user._id,
-    image,
-    brand,
-    category,
-    subcategory,
-    stock,
-    description,
     slug: slugify(name, { lower: true }),
-    colors,
-    sizes,
-    discount_price,
+    description,
+    price: Number(price),
+    discount_price: discount_price ? Number(discount_price) : null,
+    stock: Number(stock),
+    category: category_id,
+    subcategory: subcategory_id || null,
+    brand: brand_id,
+    images,
+    video,
+    is_featured: is_featured === '1' || is_featured === true,
+    is_trending: is_trending === '1' || is_trending === true,
+    status: status === '1' || status === true ? 'active' : 'draft',
+    variations: parsedVariations,
+    user: req.user._id,
   });
 
   const createdProduct = await product.save();
@@ -171,36 +188,48 @@ const updateProduct = asyncHandler(async (req, res) => {
     name,
     price,
     description,
-    images,
-    brand,
-    category,
-    subcategory,
+    brand_id,
+    category_id,
+    subcategory_id,
     stock,
-    colors,
-    sizes,
-    discount_price,
     is_featured,
     is_trending,
     status,
+    discount_price,
+    variations
   } = req.body;
 
   const product = await Product.findById(req.params.id);
 
   if (product) {
+    // Handle Files
+    if (req.files && req.files['images[]']) {
+      const newImages = req.files['images[]'].map(file => file.path.replace(/\\/g, '/'));
+      product.images = newImages; // In a real app, you might want to append or delete specific ones
+    }
+
+    if (req.files && req.files['video']) {
+      product.video = req.files['video'][0].path.replace(/\\/g, '/');
+    }
+
+    if (variations) {
+      product.variations = JSON.parse(variations);
+    }
+
     product.name = name || product.name;
-    product.price = price || product.price;
+    product.price = price !== undefined ? Number(price) : product.price;
     product.description = description || product.description;
-    product.images = images || product.images;
-    product.brand = brand || product.brand;
-    product.category = category || product.category;
-    product.subcategory = subcategory || product.subcategory;
-    product.stock = stock || product.stock;
-    product.colors = colors || product.colors;
-    product.sizes = sizes || product.sizes;
-    product.discount_price = discount_price || product.discount_price;
-    product.is_featured = is_featured !== undefined ? is_featured : product.is_featured;
-    product.is_trending = is_trending !== undefined ? is_trending : product.is_trending;
-    product.status = status || product.status;
+    product.brand = brand_id || product.brand;
+    product.category = category_id || product.category;
+    product.subcategory = subcategory_id || product.subcategory;
+    product.stock = stock !== undefined ? Number(stock) : product.stock;
+    product.discount_price = discount_price !== undefined ? (discount_price ? Number(discount_price) : null) : product.discount_price;
+    product.is_featured = is_featured !== undefined ? (is_featured === '1' || is_featured === true) : product.is_featured;
+    product.is_trending = is_trending !== undefined ? (is_trending === '1' || is_trending === true) : product.is_trending;
+    
+    if (status !== undefined) {
+        product.status = (status === '1' || status === true) ? 'active' : 'draft';
+    }
     
     if (name) {
         product.slug = slugify(name, { lower: true });

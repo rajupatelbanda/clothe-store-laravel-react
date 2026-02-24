@@ -18,7 +18,8 @@ const getBrands = asyncHandler(async (req, res) => {
 // @route   POST /api/admin/brands
 // @access  Private/Admin
 const createBrand = asyncHandler(async (req, res) => {
-  const { name, image } = req.body;
+  const { name } = req.body;
+  const image = req.file ? req.file.path.replace(/\\/g, '/') : req.body.image;
 
   const brand = await Brand.create({
     name,
@@ -33,7 +34,8 @@ const createBrand = asyncHandler(async (req, res) => {
 // @route   PUT /api/admin/brands/:id
 // @access  Private/Admin
 const updateBrand = asyncHandler(async (req, res) => {
-  const { name, image } = req.body;
+  const { name } = req.body;
+  const image = req.file ? req.file.path.replace(/\\/g, '/') : req.body.image;
 
   const brand = await Brand.findById(req.params.id);
 

@@ -47,7 +47,8 @@ const getBanners = asyncHandler(async (req, res) => {
 // @route   POST /api/admin/banners
 // @access  Private/Admin
 const createBanner = asyncHandler(async (req, res) => {
-  const { title, image, url, page } = req.body;
+  const { title, url, page } = req.body;
+  const image = req.file ? req.file.path.replace(/\\/g, '/') : req.body.image;
 
   const banner = await Banner.create({
     title,
@@ -63,7 +64,8 @@ const createBanner = asyncHandler(async (req, res) => {
 // @route   PUT /api/admin/banners/:id
 // @access  Private/Admin
 const updateBanner = asyncHandler(async (req, res) => {
-  const { title, image, url, page, is_active } = req.body;
+  const { title, url, page, is_active } = req.body;
+  const image = req.file ? req.file.path.replace(/\\/g, '/') : req.body.image;
 
   const banner = await Banner.findById(req.params.id);
 

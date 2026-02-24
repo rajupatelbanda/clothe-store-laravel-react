@@ -32,7 +32,8 @@ const getCategoryBySlug = asyncHandler(async (req, res) => {
 // @route   POST /api/admin/categories
 // @access  Private/Admin
 const createCategory = asyncHandler(async (req, res) => {
-  const { name, image } = req.body;
+  const { name } = req.body;
+  const image = req.file ? req.file.path.replace(/\\/g, '/') : req.body.image;
 
   const categoryExists = await Category.findOne({ name });
 
@@ -54,7 +55,8 @@ const createCategory = asyncHandler(async (req, res) => {
 // @route   PUT /api/admin/categories/:id
 // @access  Private/Admin
 const updateCategory = asyncHandler(async (req, res) => {
-  const { name, image } = req.body;
+  const { name } = req.body;
+  const image = req.file ? req.file.path.replace(/\\/g, '/') : req.body.image;
 
   const category = await Category.findById(req.params.id);
 
