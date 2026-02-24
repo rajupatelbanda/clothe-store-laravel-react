@@ -8,23 +8,40 @@ const connectDB = require('./config/db');
 // Load environment variables
 dotenv.config();
 
-// Connect to Database
-connectDB().catch(err => {
-  console.error('CRITICAL: Database connection failed during startup:', err.message);
-});
-
 const app = express();
+
+// Database Connection Middleware for Serverless
+let isConnected = false;
+const connectDatabaseMiddleware = async (req, res, next) => {
+  if (isConnected) {
+    return next();
+  }
+  try {
+    await connectDB();
+    isConnected = true;
+    next();
+  } catch (error) {
+    console.error('Database connection failed:', error.message);
+    res.status(500).json({ error: 'Database connection failed', details: error.message });
+  }
+};
+
+// Apply connection middleware to all /api routes
+app.use('/api', connectDatabaseMiddleware);
 
 // Middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(morgan('dev'));
+
+if (process.env.NODE_ENV !== 'production') {
+  app.use(morgan('dev'));
+}
 
 // Static Folders
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/storage/uploads', express.static(path.join(__dirname, 'uploads')));
-app.use('/storage', express.static(path.join(__dirname, 'uploads'))); // Maintain /storage/ for files WITHOUT uploads prefix
+app.use('/storage', express.static(path.join(__dirname, 'uploads')));
 
 // Root Route
 app.get('/', (req, res) => {
@@ -65,22 +82,16 @@ app.use('/api', pageRoutes);
 app.use('/api', settingRoutes);
 app.use('/api', reviewRoutes);
 app.use('/api', couponRoutes);
-app.use('/api', razorpayRoutes);
+app.use('/api/razorpay', razorpayRoutes);
 app.use('/api', dashboardRoutes);
 app.use('/api', systemRoutes);
 
 // Error Handling
 app.use((err, req, res, next) => {
   const statusCode = res.statusCode === 200 ? 500 : res.statusCode;
-
-  // Log the error to console for Vercel logs
   console.error(`[${new Date().toISOString()}] ${req.method} ${req.url} - ${statusCode}: ${err.message}`);
-  if (process.env.NODE_ENV !== 'production') {
-    console.error(err.stack);
-  }
-
-  res.status(statusCode);
-  res.json({
+  
+  res.status(statusCode).json({
     message: err.message,
     stack: process.env.NODE_ENV === 'production' ? null : err.stack,
   });
@@ -88,9 +99,9 @@ app.use((err, req, res, next) => {
 
 const PORT = process.env.PORT || 8000;
 
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.NODE_ENV !== 'production' && require.main === module) {
   app.listen(PORT, () => {
-    console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+    console.log(`Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
   });
 }
 
