@@ -66,9 +66,9 @@ const OrderTracking = () => {
                 <div className="row g-4 mt-5">
                     <div className="col-md-6 border-end border-light">
                         <h5 className="fw-black mb-4">Delivery Information</h5>
-                        <p className="mb-2"><strong>Address:</strong> {order.address}</p>
-                        <p className="mb-2"><strong>Phone:</strong> {order.phone}</p>
-                        <p className="mb-0"><strong>Payment Method:</strong> {order.payment_method.toUpperCase()}</p>
+                        <p className="mb-2"><strong>Address:</strong> {order.address || 'N/A'}</p>
+                        <p className="mb-2"><strong>Phone:</strong> {order.phone || 'N/A'}</p>
+                        <p className="mb-0"><strong>Payment Method:</strong> {order.payment_method?.toUpperCase() || 'N/A'}</p>
                     </div>
                     <div className="col-md-6 ps-md-5">
                         <h5 className="fw-black mb-4">Order Summary</h5>
