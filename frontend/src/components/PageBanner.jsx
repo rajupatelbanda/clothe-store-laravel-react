@@ -21,7 +21,7 @@ const PageBanner = ({ page, title = "" }) => {
     if (loading) return <div className="bg-light w-100" style={{ height: '200px' }}></div>;
     if (!banner) return null;
 
-    const imageUrl = banner.image.startsWith('http') ? banner.image : `${import.meta.env.VITE_STORAGE_URL}/${banner.image}`;
+    const imageUrl = banner.image.startsWith('http') ? banner.image : `/storage/${banner.image}`;
 
     return (
         <section className="p-0 position-relative mb-4 overflow-hidden border-bottom" style={{ height: '250px' }}>

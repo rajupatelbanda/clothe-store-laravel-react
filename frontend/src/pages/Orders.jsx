@@ -88,7 +88,7 @@ const Orders = () => {
                                     {order.order_items?.map(item => (
                                         <div className="col-md-4" key={item.id}>
                                             <div className="d-flex align-items-center gap-3">
-                                                <img src={item.product?.images?.[0] ? (item.product.images[0].startsWith('http') ? item.product.images[0] : `${import.meta.env.VITE_STORAGE_URL}/${item.product.images[0]}`) : 'https://via.placeholder.com/60'} className="rounded-3 shadow-sm" width="60" height="60" style={{objectFit: 'cover'}} />
+                                                <img src={item.product?.images?.[0] ? (item.product.images[0].startsWith('http') ? item.product.images[0] : `/storage/${item.product.images[0]}`) : 'https://via.placeholder.com/60'} className="rounded-3 shadow-sm" width="60" height="60" style={{objectFit: 'cover'}} />
                                                 <div>
                                                     <h6 className="fw-bold mb-0 text-dark small">{item.product?.name}</h6>
                                                     <small className="text-muted fw-bold">Qty: {item.quantity} • {item.size} / {item.color}</small>

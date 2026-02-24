@@ -120,7 +120,7 @@ const ManageCategories = () => {
                                 <input type="file" className="form-control rounded-pill p-2 border-0 bg-light" onChange={(e) => setImage(e.target.files[0])} accept="image/*" />
                                 {existingImage && (
                                     <div className="mt-2 text-center">
-                                        <img src={existingImage.startsWith('http') ? existingImage : `${import.meta.env.VITE_STORAGE_URL}/${existingImage}`} height="60" className="rounded border shadow-sm" alt="current" />
+                                        <img src={existingImage.startsWith('http') ? existingImage : `/storage/${existingImage}`} height="60" className="rounded border shadow-sm" alt="current" />
                                         <p className="x-small fw-bold text-muted mt-1">Current Image</p>
                                     </div>
                                 )}
@@ -168,7 +168,7 @@ const ManageCategories = () => {
                                     {categories.map(cat => (
                                         <tr key={cat.id} className="border-bottom">
                                             <td className="py-4">
-                                                <img src={cat.image?.startsWith('http') ? cat.image : (cat.image ? `${import.meta.env.VITE_STORAGE_URL}/${cat.image}` : 'https://via.placeholder.com/50')} className="rounded-circle shadow-sm border border-light" width="50" height="50" style={{objectFit: 'cover'}} />
+                                                <img src={cat.image?.startsWith('http') ? cat.image : (cat.image ? `/storage/${cat.image}` : 'https://via.placeholder.com/50')} className="rounded-circle shadow-sm border border-light" width="50" height="50" style={{objectFit: 'cover'}} />
                                             </td>
                                             <td className="fw-black text-dark fs-5">{cat.name}</td>
                                             <td>

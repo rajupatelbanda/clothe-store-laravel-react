@@ -46,7 +46,7 @@ const ProductDetail = () => {
                     setDisplayPrice(parseFloat(data.discount_price || data.price));
                     setActiveStock(data.stock);
     
-                                    const firstImg = data.images?.[0]?.startsWith('http') ? data.images[0] : `${import.meta.env.VITE_STORAGE_URL}/${data.images?.[0]}`;  
+                                    const firstImg = data.images?.[0]?.startsWith('http') ? data.images[0] : `/storage/${data.images?.[0]}`;  
                                     setMainImage(firstImg || 'https://via.placeholder.com/800x1000');    
                     // Auto-select first available variation if applicable
                     if (data.variations?.length > 0) {
@@ -121,14 +121,14 @@ const ProductDetail = () => {
                         </div>
                         <div className="row g-2">
                             {product.images?.map((img, i) => {
-                                const url = img.startsWith('http') ? img : `${import.meta.env.VITE_STORAGE_URL}/${img}`;
+                                const url = img; // Cloudinary URL is direct
                                 return (
                                     <div className="col-3" key={i}>
                                         <div 
                                             className={`card border-2 rounded-3 overflow-hidden cursor-pointer transition-all ${mainImage === url ? 'border-primary' : 'border-transparent'}`}
                                             onClick={() => setMainImage(url)}
                                         >
-                                            <img src={url} className="w-100" style={{ height: '80px', objectFit: 'cover' }} />
+                                            <img src={url || `https://via.placeholder.com/80?text=IMG`} className="w-100" style={{ height: '80px', objectFit: 'cover' }} />
                                         </div>
                                     </div>
                                 );
@@ -140,7 +140,7 @@ const ProductDetail = () => {
                                 <h6 className="fw-black text-uppercase small opacity-50 mb-3">Experience the Fabric</h6>
                                 <div className="rounded-4 overflow-hidden border">
                                     <video controls className="w-100 bg-dark" style={{maxHeight: '250px'}}>
-                                        <source src={product.video.startsWith('http') ? product.video : `${import.meta.env.VITE_STORAGE_URL}/${product.video}`} type="video/mp4" />
+                                        <source src={product.video.startsWith('http') ? product.video : `/storage/${product.video}`} type="video/mp4" />
                                     </video>
                                 </div>
                             </div>
@@ -259,7 +259,7 @@ const ProductDetail = () => {
                                 <Link to={`/product/${p.slug}`} className="text-decoration-none group">
                                     <div className="card border-0 bg-white product-card">
                                         <div className="rounded-4 overflow-hidden mb-2" style={{ height: '250px' }}>
-                                            <img src={p.images?.[0]?.startsWith('http') ? p.images[0] : `${import.meta.env.VITE_STORAGE_URL}/${p.images?.[0]}`} className="w-100 h-100 object-fit-cover transition-all" />
+                                            <img src={p.images?.[0] || `https://via.placeholder.com/250?text=${encodeURIComponent(p.name)}`} className="w-100 h-100 object-fit-cover transition-all" />
                                         </div>
                                         <h6 className="text-dark fw-bold mb-1 text-truncate">{p.name}</h6>
                                         <span className="text-primary fw-black small">₹{p.discount_price || p.price}</span>

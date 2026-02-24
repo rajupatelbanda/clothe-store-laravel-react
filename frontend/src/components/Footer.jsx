@@ -29,7 +29,7 @@ const Footer = () => {
                         <div className="footer__logo mb-4">
                             <Link to="/">
                                 {settings?.logo ? (
-                                    <img src={`${import.meta.env.VITE_STORAGE_URL}/${settings.logo}`} alt="logo" height="40" className="me-2 rounded shadow-sm border border-white" />
+                                    <img src={`/storage/${settings.logo}`} alt="logo" height="40" className="me-2 rounded shadow-sm border border-white" />
                                 ) : (
                                     <h4 className="fw-black text-primary mb-0">{settings?.site_name || 'Gemini Store'}</h4>
                                 )}

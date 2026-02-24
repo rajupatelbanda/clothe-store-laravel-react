@@ -62,7 +62,7 @@ const Cart = () => {
                                                 <td className="py-4">
                                                     <div className="d-flex align-items-center">
                                                         <img 
-                                                            src={item.images && item.images[0] ? (item.images[0].startsWith('http') ? item.images[0] : `${import.meta.env.VITE_STORAGE_URL}/${item.images[0]}`) : 'https://via.placeholder.com/100'} 
+                                                            src={item.images && item.images[0] ? (item.images[0].startsWith('http') ? item.images[0] : `/storage/${item.images[0]}`) : 'https://via.placeholder.com/100'} 
                                                             className="img-fluid rounded-4 shadow-sm me-3 object-fit-cover" 
                                                             style={{ width: '80px', height: '80px' }}
                                                             alt={item.name}

@@ -225,7 +225,7 @@ const ManageProducts = () => {
                                     <p className="x-small fw-bold text-muted mb-1">Current Images:</p>
                                     <div className="d-flex gap-2 overflow-auto pb-2">
                                         {existingImages.map((img, i) => (
-                                            <img key={i} src={img.startsWith('http') ? img : `${import.meta.env.VITE_STORAGE_URL}/${img}`} height="50" className="rounded border opacity-75" />
+                                            <img key={i} src={img.startsWith('http') ? img : `/storage/${img}`} height="50" className="rounded border opacity-75" />
                                         ))}
                                     </div>
                                 </div>
@@ -300,7 +300,7 @@ const ManageProducts = () => {
                                     <tr key={p.id} className="border-bottom">
                                         <td className="py-4">
                                             <div className="d-flex align-items-center gap-3">
-                                                <img src={p.images?.[0]?.startsWith('http') ? p.images[0] : `${import.meta.env.VITE_STORAGE_URL}/${p.images?.[0]}`} className="rounded-4 shadow-sm" width="60" height="60" style={{objectFit:'cover'}} />
+                                                <img src={p.images?.[0]?.startsWith('http') ? p.images[0] : `/storage/${p.images?.[0]}`} className="rounded-4 shadow-sm" width="60" height="60" style={{objectFit:'cover'}} />
                                                 <div><h6 className="fw-black mb-0 text-dark">{p.name}</h6><small className="text-muted fw-bold">{p.brand?.name}</small></div>
                                             </div>
                                         </td>

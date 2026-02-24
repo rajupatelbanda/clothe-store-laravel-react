@@ -101,7 +101,7 @@ const ManageBanners = () => {
                         <tbody>
                             {banners.map(b => (
                                 <tr key={b.id} className="border-bottom">
-                                    <td className="py-4"><img src={b.image?.startsWith('http') ? b.image : `${import.meta.env.VITE_STORAGE_URL}/${b.image}`} className="rounded-4 shadow-sm border border-light" width="120" style={{height: '60px', objectFit: 'cover'}} /></td>
+                                    <td className="py-4"><img src={b.image?.startsWith('http') ? b.image : `/storage/${b.image}`} className="rounded-4 shadow-sm border border-light" width="120" style={{height: '60px', objectFit: 'cover'}} /></td>
                                     <td><span className="badge bg-light text-dark fw-bold border text-uppercase">{b.page}</span></td>
                                     <td className="fw-black text-dark">{b.title || 'Untitled'}</td>
                                     <td className="small text-muted fw-bold">{b.link || 'Internal'}</td>

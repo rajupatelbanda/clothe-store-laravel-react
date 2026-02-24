@@ -73,7 +73,7 @@ const Layout = ({ children }) => {
                 if (response.data.site_name) document.title = response.data.site_name;
                 if (response.data.favicon) {
                     const link = document.getElementById("dynamic-favicon");
-                    if (link) link.href = `${import.meta.env.VITE_STORAGE_URL}/${response.data.favicon}`;
+                    if (link) link.href = `/storage/${response.data.favicon}`;
                 }
             } catch (e) {}
         };

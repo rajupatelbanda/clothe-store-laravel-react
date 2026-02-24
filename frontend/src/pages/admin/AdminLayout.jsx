@@ -20,7 +20,7 @@ const AdminLayout = ({ children, title = "Admin Panel" }) => {
                 if (response.data.site_name) document.title = `Admin | ${response.data.site_name}`;
                 if (response.data.favicon) {
                     const link = document.getElementById("dynamic-favicon");
-                    if (link) link.href = `${import.meta.env.VITE_STORAGE_URL}/${response.data.favicon}`;
+                    if (link) link.href = `/storage/${response.data.favicon}`;
                 }
             } catch (error) {}
         };
@@ -78,7 +78,7 @@ const AdminLayout = ({ children, title = "Admin Panel" }) => {
                     <div className="d-flex flex-column align-items-center align-items-sm-start px-4 pt-4 text-white h-100">
                         <Link to="/" className="d-flex align-items-center pb-4 mb-md-0 me-md-auto text-white text-decoration-none pt-4 w-100 border-bottom border-white border-opacity-10">
                             {settings?.logo ? (
-                                <img src={`${import.meta.env.VITE_STORAGE_URL}/${settings.logo}`} alt="logo" height="35" className="me-2 rounded shadow-sm border border-white" />
+                                <img src={`/storage/${settings.logo}`} alt="logo" height="35" className="me-2 rounded shadow-sm border border-white" />
                             ) : (
                                 <div className="bg-primary text-white p-2 rounded-3 me-2 shadow-sm d-flex align-items-center justify-content-center" style={{width: '35px', height: '35px'}}>
                                     <i className="bi bi-shield-fill"></i>
