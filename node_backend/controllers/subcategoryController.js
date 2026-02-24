@@ -14,12 +14,18 @@ const getSubcategories = asyncHandler(async (req, res) => {
 // @route   POST /api/admin/subcategories
 // @access  Private/Admin
 const createSubcategory = asyncHandler(async (req, res) => {
-  const { name, category } = req.body;
+  const { name } = req.body;
+  const categoryId = req.body.category || req.body.category_id;
+
+  if (!categoryId) {
+    res.status(400);
+    throw new Error('Category ID is required');
+  }
 
   const subcategory = await Subcategory.create({
     name,
     slug: slugify(name, { lower: true }),
-    category,
+    category: categoryId,
   });
 
   res.status(201).json(subcategory);
