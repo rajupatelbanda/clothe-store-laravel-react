@@ -140,11 +140,36 @@ const getOrders = asyncHandler(async (req, res) => {
 // @route   PATCH /api/admin/orders/:id/status
 // @access  Private/Admin
 const updateOrderStatus = asyncHandler(async (req, res) => {
-  const order = await Order.findById(req.params.id);
+  const order = await Order.findById(req.params.id).populate('user', 'name email');
 
   if (order) {
+    const oldStatus = order.status;
     order.status = req.body.status || order.status;
     const updatedOrder = await order.save();
+
+    // Send status update email
+    if (oldStatus !== updatedOrder.status) {
+      try {
+        if (order.user && order.user.email) {
+          await sendEmail({
+            email: order.user.email,
+            subject: `Order Status Update - #${order._id}`,
+            message: `Your order status has been updated to: ${updatedOrder.status}`,
+            html: `
+              <h1>Order Status Update</h1>
+              <p>Hello ${order.user.name},</p>
+              <p>The status of your order <strong>#${order._id}</strong> has been updated.</p>
+              <p><strong>New Status:</strong> <span style="text-transform: uppercase;">${updatedOrder.status}</span></p>
+              <p>You can track your order in your profile dashboard.</p>
+              <p>Thank you for shopping with us!</p>
+            `
+          });
+        }
+      } catch (error) {
+        console.error('Status update email failed:', error);
+      }
+    }
+
     res.json(updatedOrder);
   } else {
     res.status(404);
