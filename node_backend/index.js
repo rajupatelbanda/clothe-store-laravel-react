@@ -9,6 +9,12 @@ dotenv.config();
 
 const app = express();
 
+// Vercel Temporary Storage Support (MUST BE AT THE TOP)
+if (process.env.VERCEL || process.env.NODE_ENV === 'production') {
+  app.use('/storage/tmp', express.static('/tmp'));
+  app.use('/tmp', express.static('/tmp'));
+}
+
 // Middleware
 app.use(cors());
 app.use(express.json());
@@ -30,19 +36,18 @@ app.get('/', (req, res) => {
 
 // Health check (Fastest possible response)
 app.get('/api/health', (req, res) => {
-  res.status(200).json({ status: 'ok', uptime: process.uptime() });
+  res.status(200).json({ 
+    status: 'ok', 
+    uptime: process.uptime(),
+    node_env: process.env.NODE_ENV,
+    is_vercel: !!process.env.VERCEL
+  });
 });
 
-// Static Folders
+// Static Folders (Local)
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/storage/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/storage', express.static(path.join(__dirname, 'uploads')));
-
-// Add support for Vercel temporary storage
-if (process.env.NODE_ENV === 'production') {
-  app.use('/tmp', express.static('/tmp'));
-  app.use('/storage/tmp', express.static('/tmp'));
-}
 
 // Import Routes
 const authRoutes = require('./routes/authRoutes');
