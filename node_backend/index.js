@@ -9,7 +9,9 @@ const connectDB = require('./config/db');
 dotenv.config();
 
 // Connect to Database
-connectDB();
+connectDB().catch(err => {
+  console.error('CRITICAL: Database connection failed during startup:', err.message);
+});
 
 const app = express();
 
