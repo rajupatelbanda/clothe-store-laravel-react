@@ -22,49 +22,65 @@ const getSettings = asyncHandler(async (req, res) => {
 const updateSettings = asyncHandler(async (req, res) => {
   const {
     site_name,
+    email,
+    phone,
+    address,
     site_email,
     site_phone,
     site_address,
-    logo,
-    favicon,
     footer_text,
     shipping_charge,
     tax,
-    social_links,
+    social_links: bodySocialLinks,
   } = req.body;
+
+  // Handle files
+  let logo = req.body.logo;
+  let favicon = req.body.favicon;
+
+  if (req.files) {
+    if (req.files.logo && req.files.logo[0]) {
+      logo = req.files.logo[0].path;
+    }
+    if (req.files.favicon && req.files.favicon[0]) {
+      favicon = req.files.favicon[0].path;
+    }
+  }
+
+  // Handle social links from FormData
+  let social_links = bodySocialLinks;
+  if (!social_links && (req.body['social_links[facebook]'] || req.body['social_links[twitter]'] || req.body['social_links[instagram]'])) {
+    social_links = {
+      facebook: req.body['social_links[facebook]'] || '',
+      twitter: req.body['social_links[twitter]'] || '',
+      instagram: req.body['social_links[instagram]'] || '',
+    };
+  }
 
   let settings = await Setting.findOne({});
 
-  if (settings) {
-    settings.site_name = site_name || settings.site_name;
-    settings.site_email = site_email || settings.site_email;
-    settings.site_phone = site_phone || settings.site_phone;
-    settings.site_address = site_address || settings.site_address;
-    settings.logo = logo || settings.logo;
-    settings.favicon = favicon || settings.favicon;
-    settings.footer_text = footer_text || settings.footer_text;
-    settings.shipping_charge = shipping_charge || settings.shipping_charge;
-    settings.tax = tax || settings.tax;
-    settings.social_links = social_links || settings.social_links;
+  const updateData = {
+    site_name: site_name || (settings ? settings.site_name : ''),
+    site_email: email || site_email || (settings ? settings.site_email : ''),
+    site_phone: phone || site_phone || (settings ? settings.site_phone : ''),
+    site_address: address || site_address || (settings ? settings.site_address : ''),
+    logo: logo || (settings ? settings.logo : ''),
+    favicon: favicon || (settings ? settings.favicon : ''),
+    footer_text: footer_text || (settings ? settings.footer_text : ''),
+    shipping_charge: shipping_charge || (settings ? settings.shipping_charge : 0),
+    tax: tax || (settings ? settings.tax : 0),
+    social_links: social_links || (settings ? settings.social_links : {}),
+  };
 
+  if (settings) {
+    Object.assign(settings, updateData);
     const updatedSettings = await settings.save();
     res.json({
       ...updatedSettings._doc,
       id: updatedSettings._id,
     });
   } else {
-    settings = await Setting.create({
-      site_name,
-      site_email,
-      site_phone,
-      site_address,
-      logo,
-      favicon,
-      footer_text,
-      shipping_charge,
-      tax,
-      social_links,
-    });
+    settings = await Setting.create(updateData);
     res.status(201).json({
       ...settings._doc,
       id: settings._id,
