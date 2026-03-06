@@ -18,6 +18,12 @@ const getRazorpayInstance = () => {
 // @access  Private
 const createRazorpayOrder = asyncHandler(async (req, res) => {
   const { amount } = req.body;
+
+  if (!amount || isNaN(amount) || amount <= 0) {
+    res.status(400);
+    throw new Error(`Invalid amount: ${amount}`);
+  }
+
   const razorpay = getRazorpayInstance();
 
   const options = {
@@ -26,14 +32,18 @@ const createRazorpayOrder = asyncHandler(async (req, res) => {
     receipt: `receipt_${Date.now()}`,
   };
 
-  const order = await razorpay.orders.create(options);
-
-  if (!order) {
+  try {
+    const order = await razorpay.orders.create(options);
+    if (!order) {
+      res.status(500);
+      throw new Error("Failed to create Razorpay order");
+    }
+    res.json(order);
+  } catch (err) {
+    console.error("Razorpay API Error:", err);
     res.status(500);
-    throw new Error("Some error occured during order creation");
+    throw new Error(err.message || "Error communicating with Razorpay");
   }
-
-  res.json(order);
 });
 
 // @desc    Verify Razorpay payment
