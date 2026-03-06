@@ -26,11 +26,14 @@ app.use(async (req, res, next) => {
 
 // Health check (Fastest possible response)
 app.get('/api/health', (req, res) => {
+  const mongoose = require('mongoose');
   res.status(200).json({ 
     status: 'ok', 
     uptime: process.uptime(),
     node_env: process.env.NODE_ENV,
     is_vercel: !!process.env.VERCEL,
+    db_status: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
+    db_readyState: mongoose.connection.readyState,
     static_path_served_from: process.env.VERCEL ? '/tmp/uploads' : 'uploads'
   });
 });
